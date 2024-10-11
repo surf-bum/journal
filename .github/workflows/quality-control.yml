@@ -7,12 +7,12 @@ jobs:
   "quality-control":
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/journal-testing"
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/journal"
     services:
       postgres:
         image: postgres:16.4
         env:
-          POSTGRES_DATABASE: journal-testing
+          POSTGRES_DATABASE: journal
           POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
