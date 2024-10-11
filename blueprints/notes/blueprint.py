@@ -2,7 +2,7 @@ import uuid
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 
-from models import Note
+from .models import Note
 from orm import get_db_connection
 
 notes_blueprint = Blueprint("notes", __name__)

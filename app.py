@@ -1,8 +1,8 @@
 from flask import Flask
 
-from blueprints.notes import notes_blueprint
+from blueprints.notes.blueprint import notes_blueprint
 from config import settings
-from models import Note
+from blueprints.notes.models import Note
 from orm import get_db_connection
 
 app = Flask(__name__)
