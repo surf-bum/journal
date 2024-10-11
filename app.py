@@ -2,7 +2,8 @@ from flask import Flask
 
 from blueprints.notes import notes_blueprint
 from config import settings
-from orm import Note, get_db_connection
+from models import Note
+from orm import get_db_connection
 
 app = Flask(__name__)
 app.secret_key = settings.SECRET_KEY

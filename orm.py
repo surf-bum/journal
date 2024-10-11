@@ -7,9 +7,13 @@ from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import List, Optional, Type, TypeVar
 
+from utils import setup_logger
+
 psycopg2.extras.register_uuid()
 
 T = TypeVar("T", bound="BaseModel")
+
+logger = setup_logger(__name__)
 
 
 class SimpleORM(BaseModel):
@@ -40,7 +44,7 @@ class SimpleORM(BaseModel):
                 self.id = uuid.uuid4()
                 insert_sql_query = f"INSERT INTO {self.__tablename__} ({', '.join(self.dict().keys())}) VALUES ({', '.join(['%s'] * len(self.dict()))}) RETURNING id"
                 cur.execute(insert_sql_query, tuple(self.dict().values()))
-                self.id = cur.fetchone()[0]  # get the auto-generated id
+                self.id = cur.fetchone()[0]
             else:
                 cur.execute(
                     f"UPDATE {self.__tablename__} SET "
@@ -65,12 +69,6 @@ class SimpleORM(BaseModel):
         with conn.cursor() as cur:
             cur.execute(f"DELETE FROM {self.__tablename__} WHERE id = %s", (self.id,))
             conn.commit()
-
-
-class Note(SimpleORM):
-    __tablename__ = "notes"
-    title: str
-    content: str
 
 
 def get_db_connection():
