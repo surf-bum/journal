@@ -1,4 +1,6 @@
 import uuid
+from contextlib import contextmanager
+
 import psycopg2.extras
 
 from config import settings
@@ -16,47 +18,61 @@ T = TypeVar("T", bound="BaseModel")
 logger = setup_logger(__name__)
 
 
+@contextmanager
+def get_db_connection():
+    conn = None
+    try:
+        conn = psycopg2.connect(settings.DATABASE_URL)
+        yield conn
+    except Exception as e:
+        logger.error(e)
+        raise
+    finally:
+        if conn:
+            logger.debug("Closing connection.")
+            conn.close()
+
+
 class SimpleORM(BaseModel):
     id: Optional[uuid.UUID] = None
 
     @classmethod
     def from_db(cls: Type[T], data: dict) -> T:
-        print(data)
         return cls(**data)
 
     @classmethod
-    def get(cls: Type[T], conn, id: uuid.uuid4) -> Optional[T]:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+    def get(cls: Type[T], id: uuid.uuid4) -> Optional[T]:
+        with get_db_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(f"SELECT * FROM {cls.__tablename__} WHERE id = %s", (id,))
             row = cur.fetchone()
             return cls.from_db(row) if row else None
 
     @classmethod
-    def all(cls: Type[T], conn) -> List[T]:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+    def all(cls: Type[T]) -> List[T]:
+        with get_db_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(f"SELECT * FROM {cls.__tablename__}")
             rows = cur.fetchall()
             return [cls.from_db(row) for row in rows]
 
-    def save(self, conn) -> None:
-        with conn.cursor() as cur:
+    def save(self) -> None:
+        with get_db_connection() as conn, conn.cursor() as cur:
             if self.id is None:
                 self.id = uuid.uuid4()
-                insert_sql_query = f"INSERT INTO {self.__tablename__} ({', '.join(self.dict().keys())}) VALUES ({', '.join(['%s'] * len(self.dict()))}) RETURNING id"
-                cur.execute(insert_sql_query, tuple(self.dict().values()))
+                insert_sql_query = f"INSERT INTO {self.__tablename__} ({', '.join(self.model_dump().keys())}) VALUES ({', '.join(['%s'] * len(self.model_dump()))}) RETURNING id"
+                cur.execute(insert_sql_query, tuple(self.model_dump().values()))
                 self.id = cur.fetchone()[0]
             else:
                 cur.execute(
                     f"UPDATE {self.__tablename__} SET "
-                    f"{', '.join([f'{k} = %s' for k in self.dict().keys() if k != 'id'])} "
+                    f"{', '.join([f'{k} = %s' for k in self.model_dump().keys() if k != 'id'])} "
                     f"WHERE id = %s",
-                    (*[v for k, v in self.dict().items() if k != "id"], self.id),
+                    (*[v for k, v in self.model_dump().items() if k != "id"], self.id),
                 )
             conn.commit()
 
     @classmethod
-    def create_table(cls, conn) -> None:
-        with conn.cursor() as cur:
+    def create_table(cls) -> None:
+        with get_db_connection() as conn, conn.cursor() as cur:
             cur.execute(f"""
             CREATE TABLE IF NOT EXISTS {cls.__tablename__} (
                 id UUID PRIMARY KEY,
@@ -65,12 +81,7 @@ class SimpleORM(BaseModel):
             """)
             conn.commit()
 
-    def delete(self, conn) -> None:
-        with conn.cursor() as cur:
+    def delete(self) -> None:
+        with get_db_connection() as conn, conn.cursor() as cur:
             cur.execute(f"DELETE FROM {self.__tablename__} WHERE id = %s", (self.id,))
             conn.commit()
-
-
-def get_db_connection():
-    conn = psycopg2.connect(settings.DATABASE_URL)
-    return conn
