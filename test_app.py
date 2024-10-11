@@ -22,7 +22,8 @@ def page(browser_context):
 @pytest.fixture(scope="module")
 def app():
     from app import app
-    app.config['TESTING'] = True
+
+    app.config["TESTING"] = True
     yield app
 
 
@@ -47,7 +48,9 @@ def wait_for_port(port, timeout=3):
 def server(app):
     import threading
 
-    thread = threading.Thread(daemon=True, target=lambda: app.run(port=15000, use_reloader=False))
+    thread = threading.Thread(
+        daemon=True, target=lambda: app.run(port=15000, use_reloader=False)
+    )
     thread.start()
 
     wait_for_port(15000)
@@ -63,7 +66,9 @@ def test_create_note(page: Page):
 
     page.get_by_placeholder("Title").type("Foo")
     page.get_by_placeholder("Content").type("# Bar")
-    page.get_by_label("Create a new note").get_by_role("button", name="Create note").click()
+    page.get_by_label("Create a new note").get_by_role(
+        "button", name="Create note"
+    ).click()
 
     page.wait_for_selector("text='Note created successfully!'")
     assert page.is_visible("text='Note created successfully!'")

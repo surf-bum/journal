@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import List, Optional, Type, TypeVar
 
-T = TypeVar('T', bound='BaseModel')
+T = TypeVar("T", bound="BaseModel")
 
 
 class SimpleORM(BaseModel):
@@ -37,17 +37,14 @@ class SimpleORM(BaseModel):
             if self.id is None:
                 self.id = uuid.uuid4()
                 insert_sql_query = f"INSERT INTO {self.__tablename__} ({', '.join(self.dict().keys())}) VALUES ({', '.join(['%s'] * len(self.dict()))}) RETURNING id"
-                cur.execute(
-                    insert_sql_query,
-                    tuple(self.dict().values())
-                )
+                cur.execute(insert_sql_query, tuple(self.dict().values()))
                 self.id = cur.fetchone()[0]  # get the auto-generated id
             else:
                 cur.execute(
                     f"UPDATE {self.__tablename__} SET "
                     f"{', '.join([f'{k} = %s' for k in self.dict().keys() if k != 'id'])} "
                     f"WHERE id = %s",
-                    (*[v for k, v in self.dict().items() if k != 'id'], self.id)
+                    (*[v for k, v in self.dict().items() if k != "id"], self.id),
                 )
             conn.commit()
 
@@ -69,24 +66,20 @@ class SimpleORM(BaseModel):
 
 
 class Note(SimpleORM):
-    __tablename__ = 'notes'
+    __tablename__ = "notes"
     title: str
     content: str
 
 
-DATABASE = 'journal'
-USER = 'postgres'
-PASSWORD = '12dfger'
-HOST = 'localhost'
-PORT = '5432'
+DATABASE = "journal"
+USER = "postgres"
+PASSWORD = "12dfger"
+HOST = "localhost"
+PORT = "5432"
 
 
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=DATABASE,
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT
+        dbname=DATABASE, user=USER, password=PASSWORD, host=HOST, port=PORT
     )
     return conn
