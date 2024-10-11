@@ -12,7 +12,7 @@ jobs:
       postgres:
         image: postgres:16.4
         env:
-          POSTGRES_DATABASE: journal
+          POSTGRES_DB: journal
           POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
