@@ -1,10 +1,7 @@
-import pytest
-from testcontainers.postgres import PostgresContainer
-
 from orm.orm import SimpleORM
 
 
-def test_create_table(monkeypatch, postgres):
+def test_create_table():
     class Note(SimpleORM):
         __tablename__ = "notes"
         title: str
