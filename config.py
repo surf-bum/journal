@@ -5,6 +5,7 @@ from settings.utils import EnvMeta, Value
 
 class Common(metaclass=EnvMeta):
     DATABASE_URL = Value("postgres://postgres:postgres@postgres:5432/journal-default")
+    SECRET_KEY = Value("change-me-please")
 
 
 config = os.getenv("SETTINGS_PROFILE", "Common")

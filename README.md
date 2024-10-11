@@ -1,5 +1,12 @@
 # journal
 
+## Configuration
+
+### Environment variables
+
+#### DATABASE_URL
+#### SECRET_KEY
+
 ## Dependencies
 
     pip install -r requirements.txt
