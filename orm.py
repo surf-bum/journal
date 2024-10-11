@@ -3,11 +3,11 @@ import psycopg2.extras
 
 from config import settings
 
-psycopg2.extras.register_uuid()
-
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import List, Optional, Type, TypeVar
+
+psycopg2.extras.register_uuid()
 
 T = TypeVar("T", bound="BaseModel")
 
@@ -73,15 +73,6 @@ class Note(SimpleORM):
     content: str
 
 
-DATABASE = "journal"
-USER = "postgres"
-PASSWORD = "12dfger"
-HOST = "localhost"
-PORT = "5432"
-
-
 def get_db_connection():
-    conn = psycopg2.connect(
-        settings.DATABASE_URL
-    )
+    conn = psycopg2.connect(settings.DATABASE_URL)
     return conn
