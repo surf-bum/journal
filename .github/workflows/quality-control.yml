@@ -7,7 +7,7 @@ jobs:
   "quality-control":
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/journal-testing"
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/journal-testing"
     services:
       postgres:
         image: postgres:16.4
