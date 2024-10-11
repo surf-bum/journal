@@ -1,3 +1,9 @@
 from blueprints.notes.models import Note
 
-Note.create_table()
+
+def forward():
+    Note.create_table()
+
+
+# def reverse():
+#     Note.drop_table()

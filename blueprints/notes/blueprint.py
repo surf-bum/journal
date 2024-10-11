@@ -1,7 +1,16 @@
 import json
 import uuid
 
-from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file
+from flask import (
+    Blueprint,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    request,
+    send_file,
+)
+from datetime import datetime
 
 from utils import setup_logger
 from .models import Note
@@ -37,14 +46,13 @@ def update_note(note_id):
     if note:
         note.title = title
         note.content = content
+        note.updated_at=datetime.now()
         note.save()
         flash("Note updated successfully!")
     else:
         flash("Note not found!")
 
-    return redirect(
-        url_for("notes.detail", note_id=note.id)
-    )
+    return redirect(url_for("notes.detail", note_id=note.id))
 
 
 @notes_blueprint.route("/add", methods=["POST"])
@@ -53,7 +61,12 @@ def add_note():
     content = request.form["content"]
 
     if title and content:
-        new_note = Note(title=title, content=content)
+        new_note = Note(
+            title=title,
+            content=content,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
         new_note.save()
         flash("Note created successfully!")
     else:
@@ -74,21 +87,21 @@ def delete_note(note_id: uuid.UUID):
 @notes_blueprint.route("/backup-restore", methods=["GET", "POST"])
 def backup_restore_notes():
     if request.method == "POST":
-        if 'backup' in request.form:
+        if "backup" in request.form:
             notes = Note.all()
 
             deserialized_notes = [note.json() for note in notes]
-            backup_file_name = 'notes.json'
-            with open(backup_file_name, 'w') as json_file:
+            backup_file_name = "notes.json"
+            with open(backup_file_name, "w") as json_file:
                 deserialized_notes = [json.loads(_note) for _note in deserialized_notes]
                 json.dump(deserialized_notes, json_file)
 
             return send_file(backup_file_name, as_attachment=True)
 
-        elif 'restore' in request.form:
-            file = request.files['file']
+        elif "restore" in request.form:
+            file = request.files["file"]
             logger.debug("Restoring file %s.", file)
-            if file and file.filename.endswith('.json'):
+            if file and file.filename.endswith(".json"):
                 logger.debug("Passed .json file check.")
                 notes_to_restore = json.load(file)
                 logger.debug("Serialized %s.", notes_to_restore)
@@ -96,7 +109,7 @@ def backup_restore_notes():
                     new_note = Note(**note)
                     new_note.id = None
                     new_note.save()
-                return redirect(url_for('notes.backup_restore_notes'))
+                return redirect(url_for("notes.backup_restore_notes"))
 
     notes = Note.all()
     return render_template("notes/backup_restore.html", notes=notes)

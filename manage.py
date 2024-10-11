@@ -22,7 +22,6 @@ if command == "runserver":
 elif command == "makemigrations":
     os.execv(python, [python, "-m", "orm.makemigrations"])
 elif command == "migrate":
-    python = shutil.which("python")
-    logger.debug("Using python %s", python)
+    os.execv(python, [python, "-m", "orm.migrate"])
 
 logger.debug("Launching journal.")

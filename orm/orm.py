@@ -36,9 +36,6 @@ def get_db_connection():
 
 class SimpleORM(BaseModel):
     id: Optional[uuid.UUID] = None
-    created_at: datetime.datetime = None
-    updated_at: datetime.datetime = None
-    owner: Optional[uuid.UUID] = None
 
     @classmethod
     def from_db(cls: Type[T], data: dict) -> T:
@@ -46,14 +43,18 @@ class SimpleORM(BaseModel):
 
     @classmethod
     def get(cls: Type[T], id: uuid.uuid4) -> Optional[T]:
-        with get_db_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with get_db_connection() as conn, conn.cursor(
+            cursor_factory=RealDictCursor
+        ) as cur:
             cur.execute(f"SELECT * FROM {cls.__tablename__} WHERE id = %s", (id,))
             row = cur.fetchone()
             return cls.from_db(row) if row else None
 
     @classmethod
     def all(cls: Type[T]) -> List[T]:
-        with get_db_connection() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with get_db_connection() as conn, conn.cursor(
+            cursor_factory=RealDictCursor
+        ) as cur:
             cur.execute(f"SELECT * FROM {cls.__tablename__}")
             rows = cur.fetchall()
             return [cls.from_db(row) for row in rows]
@@ -75,12 +76,38 @@ class SimpleORM(BaseModel):
             conn.commit()
 
     @classmethod
+    def _annotation_to_column_type(cls, annotation: type) -> str:
+        column_type = None
+        if annotation == datetime.datetime:
+            return "TIMESTAMPTZ"
+        elif annotation == str:
+            return "TEXT"
+        else:
+            return "TEXT"
+
+    @classmethod
     def create_table(cls) -> str:
         with get_db_connection() as conn, conn.cursor() as cur:
+            columns = {}
+            for field_key, field_info in cls.__fields__.items():
+                columns.update(
+                    {
+                        field_key: {
+                            "annotation": field_info.annotation,
+                            "column_type": cls._annotation_to_column_type(
+                                field_info.annotation
+                            ),
+                        }
+                    }
+                )
+                logger.debug("%s %s", field_key, field_info)
+
+            logger.debug("columns %s", columns)
+
             create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {cls.__tablename__} (
                 id UUID PRIMARY KEY,
-                {', '.join([f"{name} TEXT" for name in cls.__annotations__ if name != 'id'])}
+                {', '.join([f"{name} {config.get("column_type")}" for name, config in columns.items() if name != 'id'])}
             )
             """
             logger.debug("create_table_query %s", create_table_query)
