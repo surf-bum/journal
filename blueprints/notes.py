@@ -60,7 +60,7 @@ def add_note():
     else:
         flash('Please provide both title and content!')
 
-    return redirect(url_for('notes.index'))  # Update to point to notes blueprint
+    return redirect(url_for('notes.index'))
 
 
 @notes_blueprint.route('/<uuid:note_id>/delete', methods=['GET'])
@@ -70,4 +70,4 @@ def delete_note(note_id: uuid.UUID):
         if note:
             note.delete(conn)
             flash('Note deleted successfully!')
-    return redirect(url_for('notes.index'))  # Update to point to notes blueprint
+    return redirect(url_for('notes.index'))
