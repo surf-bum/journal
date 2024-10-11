@@ -9,9 +9,7 @@ class Common(metaclass=EnvMeta):
 
 config = os.getenv("SETTINGS_PROFILE", "Common")
 
-settings_registry = {
-    "Common": Common
-}
+settings_registry = {"Common": Common}
 
 settings = settings_registry[config]
 assert settings, f"Settings profile '{config}' not found."
