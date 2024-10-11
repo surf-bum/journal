@@ -1,4 +1,4 @@
-from orm import SimpleORM
+from orm.orm import SimpleORM
 
 
 class Note(SimpleORM):

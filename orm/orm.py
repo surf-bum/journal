@@ -1,5 +1,6 @@
 import uuid
 from contextlib import contextmanager
+import datetime
 
 import psycopg2.extras
 
@@ -35,6 +36,9 @@ def get_db_connection():
 
 class SimpleORM(BaseModel):
     id: Optional[uuid.UUID] = None
+    created_at: datetime.datetime = None
+    updated_at: datetime.datetime = None
+    owner: Optional[uuid.UUID] = None
 
     @classmethod
     def from_db(cls: Type[T], data: dict) -> T:
@@ -71,15 +75,19 @@ class SimpleORM(BaseModel):
             conn.commit()
 
     @classmethod
-    def create_table(cls) -> None:
+    def create_table(cls) -> str:
         with get_db_connection() as conn, conn.cursor() as cur:
-            cur.execute(f"""
+            create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {cls.__tablename__} (
                 id UUID PRIMARY KEY,
                 {', '.join([f"{name} TEXT" for name in cls.__annotations__ if name != 'id'])}
             )
-            """)
+            """
+            logger.debug("create_table_query %s", create_table_query)
+            cur.execute(create_table_query)
             conn.commit()
+
+        return create_table_query
 
     def delete(self) -> None:
         with get_db_connection() as conn, conn.cursor() as cur:

@@ -1,7 +1,7 @@
 from settings.utils import EnvMeta, Value
 
 
-def test_fallback_to_default_value_if_env_variable_missing(monkeypatch):
+def test_fallback_to_default_value_if_env_key_missing(monkeypatch):
     monkeypatch.delenv("DATABASE_URL")
 
     class Common(metaclass=EnvMeta):
@@ -15,7 +15,7 @@ def test_fallback_to_default_value_if_env_variable_missing(monkeypatch):
     )
 
 
-def test_load_from_env_variable(monkeypatch):
+def test_given_env_key_load_env_value(monkeypatch):
     monkeypatch.setenv(
         "DATABASE_URL", "postgres://postgres:postgres@postgres:5432/journal-from-env"
     )
