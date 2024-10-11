@@ -8,7 +8,7 @@ app.secret_key = 'your_secret_key'
 
 
 with get_db_connection() as conn:
-    Note.create_table(conn)  # Create the table if it doesn't exist
+    Note.create_table(conn)
 
 app.register_blueprint(notes_blueprint, url_prefix='/notes')
 
