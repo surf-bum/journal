@@ -69,13 +69,13 @@
                         <input type="text" name="title" class="form-control" placeholder="Note Title" required>
                     </div>
                     <input type="hidden" name="content" id="content" required>
-                    <div id="editor" class="editor" contenteditable="true"
+                    <div id="editor" class="editor" contenteditable="plaintext-only"
                          placeholder="Write your note content here..."></div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="noteForm" class="btn btn-primary">Add Note</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="noteForm" class="btn btn-primary btn-sm">Create note</button>
             </div>
         </div>
     </div>
