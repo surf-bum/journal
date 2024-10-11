@@ -36,16 +36,13 @@ class SimpleORM(BaseModel):
         with conn.cursor() as cur:
             if self.id is None:
                 self.id = uuid.uuid4()
-                # Inserting new record
                 insert_sql_query = f"INSERT INTO {self.__tablename__} ({', '.join(self.dict().keys())}) VALUES ({', '.join(['%s'] * len(self.dict()))}) RETURNING id"
-                print(insert_sql_query)
                 cur.execute(
                     insert_sql_query,
                     tuple(self.dict().values())
                 )
                 self.id = cur.fetchone()[0]  # get the auto-generated id
             else:
-                # Updating existing record
                 cur.execute(
                     f"UPDATE {self.__tablename__} SET "
                     f"{', '.join([f'{k} = %s' for k in self.dict().keys() if k != 'id'])} "
