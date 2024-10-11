@@ -1,4 +1,4 @@
-flask
-markdown
-psycopg2
-pydantic
+flask==3.0.3
+markdown==3.7
+psycopg2==2.9.9
+pydantic==2.9.2
