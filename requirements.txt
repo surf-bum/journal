@@ -1,0 +1,4 @@
+flask
+markdown
+psycopg2
+pydantic

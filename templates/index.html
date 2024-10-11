@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h2>All Notes</h2>
+
+    <div>
+        <h4>Filter by Tags:</h4>
+        <ul>
+            {% for tag in tags %}
+            <li><a href="{{ url_for('tag_filter', tag=tag['name']) }}">{{ tag['name'] }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <ul>
+        {% for note in notes %}
+        <li>
+            <a href="{{ url_for('note_detail', note_id=note['id']) }}">{{ note['title'] }}</a>
+            {% set associated_tags = [] %}
+            {% for nt in orm.fetch_all(NoteTag) %}
+            {% if nt['note_id'] == note['id'] %}
+            {% set associated_tags = associated_tags + [nt['tag_id']] %}
+            {% endif %}
+            {% endfor %}
+            {% for tag in orm.fetch_all(Tag) %}
+            {% if tag['id'] in associated_tags %}
+            <span> [{{ tag['name'] }}]</span>
+            {% endif %}
+            {% endfor %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('index', page=page-1) }}">Previous</a>
+        {% endif %}
+        <span> Page {{ page }} of {{ total_pages }} </span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('index', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
