@@ -77,7 +77,6 @@ class SimpleORM(BaseModel):
 
     @classmethod
     def _annotation_to_column_type(cls, annotation: type) -> str:
-        column_type = None
         if annotation == datetime.datetime:
             return "TIMESTAMPTZ"
         elif annotation == str:
