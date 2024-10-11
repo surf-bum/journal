@@ -35,4 +35,4 @@ jobs:
       - name: Tests
         run: |
           playwright install chromium
-          pytest test_settings.py
+          pytest -vvv
