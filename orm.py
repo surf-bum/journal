@@ -1,6 +1,8 @@
 import uuid
 import psycopg2.extras
 
+from config import settings
+
 psycopg2.extras.register_uuid()
 
 from psycopg2.extras import RealDictCursor
@@ -80,6 +82,6 @@ PORT = "5432"
 
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=DATABASE, user=USER, password=PASSWORD, host=HOST, port=PORT
+        settings.DATABASE_URL
     )
     return conn
