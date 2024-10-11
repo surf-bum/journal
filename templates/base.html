@@ -32,18 +32,24 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Notes</a>
+                    <a class="nav-link" href="/notes">Notes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tags</a>
+                    <a class="nav-link" href="/tags">Tags</a>
                 </li>
             </ul>
         </div>
-        <div class="d-flex gap-1">
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success btn-sm" type="submit">Search</button>
-            </form>
+    </div>
+</nav>
+<nav class="mt-1 navbar">
+    <div class="container-fluid">
+        <div class="d-flex gap-1 w-100">
+            <div>
+                <form class="d-flex" role="search">
+                    <input class="form-control form-control-sm me-2 flex-grow-1" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success btn-sm" type="submit">Search</button>
+                </form>
+            </div>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#noteModal">
                 Create Note
             </button>
@@ -58,7 +64,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="noteForm" action="{{ url_for('add_note') }}" method="POST">
+                <form id="noteForm" action="{{ url_for('notes.add_note') }}" method="POST">
                     <div class="mb-3">
                         <input type="text" name="title" class="form-control" placeholder="Note Title" required>
                     </div>
@@ -95,10 +101,9 @@
 
     noteForm.onsubmit = function () {
         contentInput.value = editor.innerHTML;
-
         if (!contentInput.value.trim()) {
             alert("Content is required!");
-            return false; // Prevent form submission
+            return false;
         }
     };
 </script>

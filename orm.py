@@ -1,8 +1,6 @@
 import uuid
 import psycopg2.extras
 
-# call it in any place of your program
-# before working with UUID objects in PostgreSQL
 psycopg2.extras.register_uuid()
 
 from psycopg2.extras import RealDictCursor
@@ -77,3 +75,21 @@ class Note(SimpleORM):
     __tablename__ = 'notes'
     title: str
     content: str
+
+
+DATABASE = 'journal'
+USER = 'postgres'
+PASSWORD = '12dfger'
+HOST = 'localhost'
+PORT = '5432'
+
+
+def get_db_connection():
+    conn = psycopg2.connect(
+        dbname=DATABASE,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
+    )
+    return conn
