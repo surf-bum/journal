@@ -5,9 +5,7 @@ class EnvMeta(type):
     def __new__(cls, name, bases, attrs):
         for attr_name, attr_value in attrs.items():
             if isinstance(attr_value, Value):
-                attrs[attr_name] = (
-                    attr_value.get(attr_name)
-                )
+                attrs[attr_name] = attr_value.get(attr_name)
         return super().__new__(cls, name, bases, attrs)
 
 
