@@ -51,7 +51,7 @@
                 </form>
             </div>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#noteModal">
-                Create Note
+                Create note
             </button>
         </div>
     </div>
@@ -66,7 +66,7 @@
             <div class="modal-body">
                 <form id="noteForm" action="{{ url_for('notes.add_note') }}" method="POST">
                     <div class="mb-3">
-                        <input type="text" name="title" class="form-control" placeholder="Note Title" required>
+                        <input type="text" name="title" class="form-control" placeholder="Title" required>
                     </div>
                     <input type="hidden" name="content" id="content" required>
                     <div id="editor" class="editor" contenteditable="plaintext-only"

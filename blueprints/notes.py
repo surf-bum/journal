@@ -56,7 +56,7 @@ def add_note():
         new_note = Note(title=title, content=content)
         with get_db_connection() as conn:
             new_note.save(conn)
-        flash('Note added successfully!')
+        flash('Note created successfully!')
     else:
         flash('Please provide both title and content!')
 
