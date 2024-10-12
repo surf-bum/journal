@@ -5,7 +5,10 @@
     <div class="d-flex flex-column gap-1">
         <div class="d-flex justify-content-between align-items-center">
             <p class="h2">{{ note.title }}</p>
-            <button id="editButton" class="btn btn-primary btn-sm">Edit</button>
+            <div>
+                <button id="editButton" class="btn btn-primary btn-sm">Edit</button>
+                <a class="btn btn-danger btn-sm" href="{{ url_for('ui.notes.delete_note', note_id=note.id) }}">Delete</a>
+            </div>
         </div>
         <div id="markdown" class="border p-2"></div>
     </div>
