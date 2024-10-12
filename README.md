@@ -10,10 +10,11 @@ Only Postgres or derivant are supported. Default value is `postgres://postgres:p
 
 #### SECRET_KEY
 
-## Dependencies
+## Development setup
 
-    pip install -r requirements.txt
-    pip install -r requirements-dev.txt
+### Dependencies
+
+    pip install -r requirements.txt -r requirements-dev.txt
 
 ## Testing
 
@@ -25,12 +26,12 @@ Only Postgres or derivant are supported. Default value is `postgres://postgres:p
 
 #### Run headless
 
-    pytest --browser chromium --headed
+    pytest
 
 #### Run headed
 
-    pytest --browser chromium --headed
+    pytest --headed
 
 #### Debug
 
-    PW_DEBUG=1 pytest --browser chromium
+    PW_DEBUG=1 pytest
