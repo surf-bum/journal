@@ -33,7 +33,7 @@ def detail(note_id):
         return render_template("detail.html", note=note)
     else:
         flash("Note not found!")
-        return redirect(url_for("notes.index"))  # Update to point to notes blueprint
+        return redirect(url_for("ui.notes.index"))  # Update to point to notes blueprint
 
 
 @notes_blueprint.route("/<uuid:note_id>/update", methods=["POST"])
@@ -52,11 +52,11 @@ def update_note(note_id):
     else:
         flash("Note not found!")
 
-    return redirect(url_for("notes.detail", note_id=note.id))
+    return redirect(url_for("ui.notes.detail", note_id=note.id))
 
 
-@notes_blueprint.route("/add", methods=["POST"])
-def add_note():
+@notes_blueprint.route("/create", methods=["POST"])
+def create_note():
     title = request.form["title"]
     content = request.form["content"]
 
@@ -72,7 +72,7 @@ def add_note():
     else:
         flash("Please provide both title and content!")
 
-    return redirect(url_for("notes.index"))
+    return redirect(url_for("ui.notes.index"))
 
 
 @notes_blueprint.route("/<uuid:note_id>/delete", methods=["GET"])
@@ -81,7 +81,7 @@ def delete_note(note_id: uuid.UUID):
     if note:
         note.delete()
         flash("Note deleted successfully!")
-    return redirect(url_for("notes.index"))
+    return redirect(url_for("ui.notes.index"))
 
 
 @notes_blueprint.route("/backup-restore", methods=["GET", "POST"])
@@ -109,7 +109,7 @@ def backup_restore_notes():
                     new_note = Note(**note)
                     new_note.id = None
                     new_note.save()
-                return redirect(url_for("notes.backup_restore_notes"))
+                return redirect(url_for("ui.notes.backup_restore_notes"))
 
     notes = Note.all()
     return render_template("notes/backup_restore.html", notes=notes)

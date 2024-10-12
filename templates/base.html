@@ -32,13 +32,13 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/notes">Notes</a>
+                    <a class="nav-link" href="{{ url_for('ui.notes.index') }}">Notes</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/notes/tags">Tags</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/notes/backup-restore">Backup and restore</a>
+                    <a class="nav-link" href="{{ url_for('ui.notes.backup_restore_notes') }}">Backup and restore</a>
                 </li>
             </ul>
         </div>
@@ -67,13 +67,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="noteForm" action="{{ url_for('notes.add_note') }}" method="POST">
-                    <div class="mb-3">
-                        <input type="text" name="title" class="form-control" placeholder="Title" required>
+                <form id="noteForm" action="{{ url_for('ui.notes.create_note') }}" method="POST">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Title</label>
+                        <input class="form-control" name="title" type="text" required>
                     </div>
-                    <input type="hidden" name="content" id="content" required>
-                    <div id="editor" class="editor" contenteditable="plaintext-only"
-                         placeholder="Write your note content here..."></div>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Content</label>
+                        <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
+                </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -101,14 +103,6 @@
     const editor = document.getElementById('editor');
     const contentInput = document.getElementById('content');
     const noteForm = document.getElementById('noteForm');
-
-    noteForm.onsubmit = function () {
-        contentInput.value = editor.innerHTML;
-        if (!contentInput.value.trim()) {
-            alert("Content is required!");
-            return false;
-        }
-    };
 </script>
 </body>
 

@@ -64,8 +64,8 @@ def test_create_note(page: Page):
     page.wait_for_selector("text='Create a new note'")
     assert page.is_visible("text='Create a new note'")
 
-    page.get_by_placeholder("Title").type("Foo")
-    page.get_by_placeholder("Content").type("# Bar")
+    page.locator("input[name=\"title\"]").type("Foo")
+    page.locator("textarea[name=\"content\"]").type("# Bar")
     page.get_by_label("Create a new note").get_by_role(
         "button", name="Create note"
     ).click()
