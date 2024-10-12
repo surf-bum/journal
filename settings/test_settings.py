@@ -1,8 +1,11 @@
+import os
+
 from settings.utils import EnvMeta, Value
 
 
 def test_fallback_to_default_value_if_env_key_missing(monkeypatch):
-    monkeypatch.delenv("DATABASE_URL")
+    if os.getenv("DATABASE_URL"):
+        monkeypatch.delenv("DATABASE_URL")
 
     class Common(metaclass=EnvMeta):
         DATABASE_URL = Value(

@@ -5,6 +5,9 @@
 ### Environment variables
 
 #### DATABASE_URL
+
+Only Postgres or derivant are supported. Default value is `postgres://postgres:postgres@localhost:5432/journal`.
+
 #### SECRET_KEY
 
 ## Dependencies

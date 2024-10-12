@@ -4,7 +4,7 @@ from settings.utils import EnvMeta, Value
 
 
 class Common(metaclass=EnvMeta):
-    DATABASE_URL = Value("postgres://postgres:postgres@postgres:5432/journal-default")
+    DATABASE_URL = Value("postgres://postgres:postgres@localhost:5432/journal")
     SECRET_KEY = Value("change-me-please")
 
 
