@@ -46,7 +46,7 @@ def update_note(note_id):
     if note:
         note.title = title
         note.content = content
-        note.updated_at=datetime.now()
+        note.updated_at = datetime.now()
         note.save()
         flash("Note updated successfully!")
     else:
