@@ -68,7 +68,7 @@ def create_note():
             updated_at=datetime.now(),
         )
         new_note.save()
-        flash("Note created successfully!")
+        flash(f"Note '{new_note.title}' created successfully!")
     else:
         flash("Please provide both title and content!")
 

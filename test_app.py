@@ -1,8 +1,13 @@
 import socket
 import time
+import uuid
 
 import pytest
 from playwright.sync_api import Page
+
+from utils import setup_logger
+
+logger = setup_logger(__name__)
 
 
 @pytest.fixture
@@ -64,11 +69,16 @@ def test_create_note(page: Page):
     page.wait_for_selector("text='Create a new note'")
     assert page.is_visible("text='Create a new note'")
 
-    page.locator("input[name=\"title\"]").type("Foo")
-    page.locator("textarea[name=\"content\"]").type("# Bar")
+    random_suffix = str(uuid.uuid4())
+    title = f"Foo-{random_suffix}"
+    page.locator("input[name=\"title\"]").type(title)
+    content = f"# Bar-{random_suffix}"
+    page.locator("textarea[name=\"content\"]").type(content)
     page.get_by_label("Create a new note").get_by_role(
         "button", name="Create note"
     ).click()
 
-    page.wait_for_selector("text='Note created successfully!'")
-    assert page.is_visible("text='Note created successfully!'")
+    created_successfully_alert_text = f"Note '{title}' created successfully!"
+    selector = f"text='{created_successfully_alert_text}'"
+    page.wait_for_selector(selector)
+    assert page.is_visible(selector)
