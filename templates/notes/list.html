@@ -4,16 +4,16 @@
 
 <div class="row row-cols-1 row-cols-md-3 g-2">
 {% for note in notes %}
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title text-truncate">{{ note.title }}</h5>
-                <p class="card-text">{{ note.updated_at }}</p>
-                <a class="stretched-link" data-note-title="{{ note.title }}" href="{{ url_for('ui.notes.detail', note_id=note.id) }}"></a>
-                <a class="btn btn-danger btn-sm" href="{{ url_for('ui.notes.delete_note', note_id=note.id) }}">Delete</a>
-            </div>
-            </div>
+<div class="col">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title text-truncate">{{ note.title }}</h5>
+            <p class="card-text font-monospace mb-0 text-secondary">{{ note.updated_at }}</p>
+            <a class="stretched-link" data-note-title="{{ note.title }}" href="{{ url_for('ui.notes.detail', note_id=note.id) }}"></a>
+            <a class="btn btn-danger btn-sm" href="{{ url_for('ui.notes.delete_note', note_id=note.id) }}">Delete</a>
         </div>
+        </div>
+    </div>
 {% endfor %}
 </div>
 
