@@ -33,8 +33,7 @@ def detail(note_id):
         return render_template("detail.html", note=note)
     else:
         flash("Note not found!")
-        return redirect(url_for("ui.notes.index"))  # Update to point to notes blueprint
-
+        return redirect(url_for("ui.notes.index"))
 
 @notes_blueprint.route("/<uuid:note_id>/update", methods=["POST"])
 def update_note(note_id):
