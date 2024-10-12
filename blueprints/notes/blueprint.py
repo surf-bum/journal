@@ -23,7 +23,7 @@ notes_blueprint = Blueprint("notes", __name__)
 @notes_blueprint.route("/")
 def index():
     notes = Note.all()
-    return render_template("list.html", notes=notes)
+    return render_template("notes/list.html", notes=notes)
 
 
 @notes_blueprint.route("/<uuid:note_id>", methods=["GET"])

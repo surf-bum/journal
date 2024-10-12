@@ -62,7 +62,8 @@ def server(app):
     yield
 
 
-def test_create_note(page: Page):
+def test_create_and_read_note(page: Page):
+    # create
     page.goto("http://127.0.0.1:15000/ui/notes")
 
     page.get_by_role("button", name="Create note").click()
@@ -80,5 +81,11 @@ def test_create_note(page: Page):
 
     created_successfully_alert_text = f"Note '{title}' created successfully!"
     selector = f"text='{created_successfully_alert_text}'"
+    page.wait_for_selector(selector)
+    assert page.is_visible(selector)
+
+    # read
+    page.get_by_role("heading", name=title).click(force=True)
+    selector = f"text='{title}'"
     page.wait_for_selector(selector)
     assert page.is_visible(selector)
