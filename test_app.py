@@ -58,7 +58,7 @@ def server(app):
 
 
 def test_create_note(page: Page):
-    page.goto("http://127.0.0.1:15000/notes")
+    page.goto("http://127.0.0.1:15000/ui/notes")
 
     page.get_by_role("button", name="Create note").click()
     page.wait_for_selector("text='Create a new note'")
