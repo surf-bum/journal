@@ -36,6 +36,7 @@ def detail(note_id):
         flash("Note not found!")
         return redirect(url_for("ui.notes_ui.index"))
 
+
 @ui_notes_blueprint.route("/<uuid:note_id>/update", methods=["POST"])
 def update_note(note_id):
     title = request.form["title"]

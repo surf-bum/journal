@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column gap-2" style="height: calc(100vh - 128px);">
+    <div id="messages" class="flex-grow-1"></div>
+    <form action="" class="d-flex align-items-center" id="promptForm" method="POST">
+        <input autocomplete="off" class="form-control form-control-sm me-2" id="promptInput" type="text" name="prompt" required>
+        <button class="btn btn-primary btn-sm" type="submit">Send</button>
+    </form>
+</div>
+<script>
+    const messagesContainerElement = document.getElementById("messages");
+    const formElement = document.getElementById("promptForm");
+
+    function addMessageElement(){
+        const messageContainerElement = document.createElement("div");
+        messageContainerElement.setAttribute("class", "card gap-2 mb-2 p-2");
+        
+        const messageParagraphElement = document.createElement("p");
+        messageParagraphElement.setAttribute("class", "mb-0");
+        messageParagraphElement.innerText = "...";
+
+        messageContainerElement.appendChild(messageParagraphElement);
+        messagesContainerElement.appendChild(messageContainerElement);
+
+        return messageParagraphElement;
+    }
+
+    formElement.onsubmit = (e)=>{
+        e.preventDefault();
+
+        const formData = new FormData(formElement);
+        const prompt = formData.get("prompt");
+
+        let messageParagraphElement = addMessageElement();
+        const promptInput = document.getElementById("promptInput");
+        messageParagraphElement.innerHTML = prompt;
+        promptInput.value = ""
+        
+        messageParagraphElement = addMessageElement();
+        fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/prompt", {
+                body: JSON.stringify({"prompt": formData.get("prompt")}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }, 
+                method: "post" }
+            ).then(response => {
+    
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let markdownResponse = ""
+
+            function read() {
+                return reader.read().then(({ done, value }) => {
+                    if (done) {
+                        console.log("Stream complete");
+                        return;
+                    }
+
+                    let chunk = decoder.decode(value, { stream: true });
+                    const messages = chunk.split("\n");
+                    messages.forEach(_message=>{
+                        if(!_message){
+                            return;
+                        }
+
+                        const message = JSON.parse(_message);
+                        const response = message["response"];
+                        markdownResponse += response;
+                        messageParagraphElement.innerHTML = marked.parse(markdownResponse);
+                    })
+
+                    return read();
+                });
+            }
+
+            return read();
+        }).catch(error => {
+            console.error("Error fetching and receiving data:", error);
+        });
+        messageParagraphElement.innerText
+    }   
+</script>
+{% endblock %}
