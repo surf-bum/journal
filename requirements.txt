@@ -5,4 +5,4 @@ markdown==3.7
 psycopg2==2.9.9
 pydantic==2.9.2
 python-dotenv==1.0.1
-request==2.32.3 
+requests==2.32.3 
