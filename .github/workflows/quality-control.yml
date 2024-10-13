@@ -33,7 +33,9 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
       - name: Lint
-        run: ruff check .
+        run: |
+          djlint . --check
+          ruff check .
       - name: Tests
         run: |
           playwright install chromium

@@ -1,50 +1,63 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="noteModalLabel">Create a new note</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="noteForm" action="{{ url_for('ui.notes_ui.create_note') }}" method="POST">
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Title</label>
-                        <input class="form-control" name="title" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Content</label>
-                        <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
+    <div class="modal fade"
+         id="noteModal"
+         tabindex="-1"
+         aria-labelledby="noteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="noteModalLabel">Create a new note</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                 </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="noteForm" class="btn btn-primary btn-sm">Create note</button>
+                <div class="modal-body">
+                    <form id="noteForm"
+                          action="{{ url_for("ui.notes_ui.create_note") }}"
+                          method="POST">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Title</label>
+                            <input class="form-control" name="title" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Content</label>
+                            <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="noteForm" class="btn btn-primary btn-sm">Create note</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<button type="button" class="btn btn-primary btn-sm mb-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#noteModal">
-    Create note
-</button>
-<div class="row row-cols-1 row-cols-md-3 g-2">
-{% for note in notes %}
-<div class="col">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title text-truncate">{{ note.title }}</h5>
-            <p class="card-text font-monospace mb-0 text-secondary">{{ note.updated_at.strftime('%Y-%m-%d %H:%M:%S %Z') }}</p>
-            <a class="stretched-link" data-note-title="{{ note.title }}" href="{{ url_for('ui.notes_ui.detail', note_id=note.id) }}"></a>
-            <a class="btn btn-danger btn-sm" href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
-        </div>
-        </div>
+    <button type="button"
+            class="btn btn-primary btn-sm mb-2 text-nowrap"
+            data-bs-toggle="modal"
+            data-bs-target="#noteModal">Create note</button>
+    <div class="row row-cols-1 row-cols-md-3 g-2">
+        {% for note in notes %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">{{ note.title }}</h5>
+                        <p class="card-text font-monospace mb-0 text-secondary">{{ note.updated_at.strftime("%Y-%m-%d %H:%M:%S %Z") }}</p>
+                        <a class="stretched-link"
+                           data-note-title="{{ note.title }}"
+                           href="{{ url_for('ui.notes_ui.detail', note_id=note.id) }}"></a>
+                        <a class="btn btn-danger btn-sm"
+                           href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No notes found.</p>
+        {% endfor %}
     </div>
-{% else %}
-    <p>No notes found.</p>
-{% endfor %}
-</div>
-
 {% endblock %}
