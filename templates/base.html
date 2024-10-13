@@ -19,7 +19,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('ui.notes.index') }}">
+        <a class="navbar-brand" href="{{ url_for('ui.notes_ui.index') }}">
             🪶Journal
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
@@ -29,18 +29,18 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('ui.notes.index') }}">Home</a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('ui.notes_ui.index') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('ui.notes.index') }}">Notes</a>
+                    <a class="nav-link" href="{{ url_for('ui.notes_ui.index') }}">Notes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/notes/tags">Tags</a>
+                    <a class="nav-link" href="{{ url_for('ui.notes_ui.index') }}">Assistants</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="notesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
                     <ul class="dropdown-menu" aria-labelledby="notesDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('ui.notes.backup_restore_notes') }}">Backup and restore</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('ui.notes_ui.backup_restore_notes') }}">Backup and restore</a></li>
                     </ul>
                 </li>
             </ul>
@@ -70,7 +70,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="noteForm" action="{{ url_for('ui.notes.create_note') }}" method="POST">
+                <form id="noteForm" action="{{ url_for('ui.notes_ui.create_note') }}" method="POST">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Title</label>
                         <input class="form-control" name="title" type="text" required>
