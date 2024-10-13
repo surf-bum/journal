@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
-{% block breadcrumbs %}
-    <li class="breadcrumb-item" aria-current="page">
-        Notes
-    </li>
-{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item" aria-current="page">Notes</li>{% endblock %}
 {% block content %}
     <div class="modal fade"
          id="noteModal"
@@ -56,8 +52,6 @@
                         <a class="stretched-link"
                            data-note-title="{{ note.title }}"
                            href="{{ url_for('ui.notes_ui.detail', note_id=note.id) }}"></a>
-                        <a class="btn btn-danger btn-sm"
-                           href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
                     </div>
                 </div>
             </div>
