@@ -12,7 +12,7 @@
             <h5 class="card-title text-truncate">{{ assistant.name }}</h5>
             <a class="btn btn-primary btn-sm" data-assistant-name="{{ assistant.name }}" href="{{ url_for('ui.assistants_ui.view_assistant_completion', assistant=assistant.name ) }}">Completion</a>
             <a class="btn btn-primary btn-sm" data-assistant-name="{{ assistant.name }}" href="{{ url_for('ui.assistants_ui.view_assistant_completion', assistant=assistant.name ) }}">Chat</a>
-            <a class="btn btn-primary btn-sm" data-assistant-name="{{ assistant.name }}" href="{{ url_for('ui.assistants_ui.view_assistant_completion', assistant=assistant.name ) }}">Query</a>
+            <a class="btn btn-primary btn-sm" data-assistant-name="{{ assistant.name }}" href="{{ url_for('ui.assistants_ui.view_assistant_query', assistant=assistant.name ) }}">Query</a>
         </div>
         </div>
     </div>

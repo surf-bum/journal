@@ -48,3 +48,7 @@ def list_assistants():
 @ui_assistants_blueprint.route("/<string:assistant>/completion", methods=["GET"])
 def view_assistant_completion(assistant: str):
     return render_template("assistants/completion.html")
+
+@ui_assistants_blueprint.route("/<string:assistant>/query", methods=["GET"])
+def view_assistant_query(assistant: str):
+    return render_template("assistants/query.html")
