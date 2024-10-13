@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="d-flex flex-column gap-2" style="height: calc(100vh - 128px);">
-        <div id="messages" class="flex-grow-1"></div>
-        <form action=""
-              class="d-flex align-items-center"
+    <div class="d-flex flex-column gap-2 h-100">
+        <div class="flex-grow-1" id="messages"></div>
+        <form class="d-flex align-items-center"
               id="promptForm"
-              method="POST">
+              method="POST"
+              style="margin-bottom: 48px">
             <input autocomplete="off"
                    class="form-control form-control-sm me-2"
                    id="promptInput"
