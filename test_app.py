@@ -93,7 +93,9 @@ def test_create_and_read_note(page: Page):
     # edit
     page.get_by_role("button", name="Edit").click()
     edited_content = "Edited content."
-    page.locator('textarea[id="editContent"]').type(edited_content)
+    edit_content_textarea = page.locator('textarea[id="editContent"]') 
+    edit_content_textarea.fill("")
+    edit_content_textarea.type(edited_content)
     page.get_by_role("button", name="Save changes").click()
 
     selector = f"text='{edited_content}'"
