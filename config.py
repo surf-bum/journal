@@ -5,6 +5,7 @@ from settings.utils import EnvMeta, Value
 
 class Common(metaclass=EnvMeta):
     DATABASE_URL = Value("postgres://postgres:postgres@localhost:5432/journal")
+    S3_BUCKET = Value("journal")
     SECRET_KEY = Value("change-me-please")
 
 
