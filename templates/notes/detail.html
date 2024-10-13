@@ -1,4 +1,12 @@
 {% extends 'base.html' %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item" aria-current="page">
+        <a href="{{ url_for("ui.notes_ui.index") }}">Notes</a>
+    </li>
+    <li class="breadcrumb-item" aria-current="page">
+        {{ note.title }}
+    </li>
+{% endblock %}
 {% block content %}
     <div id="renderedContent">
         <div class="d-flex flex-column gap-1">
