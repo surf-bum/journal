@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<button type="button" class="btn btn-primary btn-sm mb-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#noteModal">
+    Create note
+</button>
 <div class="row row-cols-1 row-cols-md-3 g-2">
 {% for note in notes %}
 <div class="col">
@@ -14,6 +16,8 @@
         </div>
         </div>
     </div>
+{% else %}
+    <p>No notes found.</p>
 {% endfor %}
 </div>
 
