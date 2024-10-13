@@ -72,9 +72,9 @@ def test_create_and_read_note(page: Page):
 
     random_suffix = str(uuid.uuid4())
     title = f"Foo-{random_suffix}"
-    page.locator("input[name=\"title\"]").type(title)
+    page.locator('input[name="title"]').type(title)
     content = f"# Bar-{random_suffix}"
-    page.locator("textarea[name=\"content\"]").type(content)
+    page.locator('textarea[name="content"]').type(content)
     page.get_by_label("Create a new note").get_by_role(
         "button", name="Create note"
     ).click()
@@ -93,9 +93,9 @@ def test_create_and_read_note(page: Page):
     # edit
     page.get_by_role("button", name="Edit").click()
     edited_content = "Edited content."
-    page.locator("textarea[id=\"editContent\"]").type(edited_content)
+    page.locator('textarea[id="editContent"]').type(edited_content)
     page.get_by_role("button", name="Save changes").click()
-    
+
     selector = f"text='{edited_content}'"
     page.wait_for_selector(selector)
     assert page.is_visible(selector)
