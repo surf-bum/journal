@@ -15,6 +15,9 @@ logger = setup_logger(__name__)
 api_assistants_blueprint = Blueprint("assistants_api", __name__)
 ui_assistants_blueprint = Blueprint("assistants_ui", __name__)
 
+MODEL_REGISTRY = {"gemma2": {"name": "gemma2"}, "gemma2:27b": {"name": "gemma2:27b"}, "llama3.1": {"name": "llama3.1"}}
+model = MODEL_REGISTRY.get("gemma2")
+
 
 @api_assistants_blueprint.route(
     "/fake-uuid/sessions/fake-uuid/completion", methods=["POST"]
@@ -25,12 +28,12 @@ def prompt_assistant():
 
     r = requests.post(
         "http://127.0.0.1:11434/api/generate",
-        json={"model": "llama3.1", "prompt": prompt},
+        json={"model": model.get("name"), "prompt": prompt},
         stream=True,
     )
 
     if not r.ok:
-        return {"error": "Streaming request failed"}, 500
+        return {"error": "Streaming request failed"}, r.status_code
 
     def generate():
         for chunk in r.iter_content(chunk_size=1024 * 32):
@@ -55,14 +58,14 @@ def query_assistant():
     r = requests.post(
         "http://127.0.0.1:11434/api/generate",
         json={
-            "model": "llama3.1",
+            "model": model.get("name"),
             "prompt": f"Using this data: {data}. Respond to this prompt: {prompt}",
         },
         stream=True,
     )
 
     if not r.ok:
-        return {"error": "Streaming request failed"}, 500
+        return {"error": "Streaming request failed"}, r.status_code
 
     def generate():
         for chunk in r.iter_content(chunk_size=1024 * 32):
@@ -74,7 +77,7 @@ def query_assistant():
 
 @ui_assistants_blueprint.route("/", methods=["GET"])
 def list_assistants():
-    assistants = [{"name": "llama3.1"}]
+    assistants = [model]
     return render_template("assistants/list.html", assistants=assistants)
 
 

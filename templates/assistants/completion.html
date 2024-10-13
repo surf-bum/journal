@@ -67,15 +67,20 @@
 
                     let chunk = decoder.decode(value, { stream: true });
                     const messages = chunk.split("\n");
+                    let buffer = ""
                     messages.forEach(_message=>{
                         if(!_message.trim()){
                             return;
                         }
 
-                        const message = JSON.parse(_message);
-                        const response = message["response"];
-                        markdownResponse += response;
-                        messageParagraphElement.innerHTML = marked.parse(markdownResponse);
+                        try{
+                            const message = JSON.parse(_message);
+                            markdownResponse += message["response"];
+                            messageParagraphElement.innerHTML = marked.parse(markdownResponse);
+                            buffer = ""
+                        }catch(e){
+                            buffer += _message
+                        }
                     })
 
                     return read();
