@@ -10,9 +10,11 @@ from flask import (
     request,
     send_file,
 )
+import ollama
+import urllib
 
 from config import settings
-from utils import setup_logger
+from utils import get_chromadb_collection, setup_logger
 
 logger = setup_logger(__name__)
 
@@ -26,21 +28,67 @@ api_references_blueprint = Blueprint("references_api", __name__)
 ui_references_blueprint = Blueprint("references_ui", __name__)
 
 
+@api_references_blueprint.route("/embed/<string:key>", methods=["POST"])
+def embed_reference_key(key: str):
+    key = urllib.parse.unquote_plus(key)
+
+    logger.debug("embed key %s data %s", key)
+    reference = s3_client.get_object(Bucket=bucket_name, Key=key)
+    file_stream = reference["Body"].read()
+    document = file_stream.decode()
+    logger.debug("document %s", document)
+
+    response = ollama.embeddings(model="mxbai-embed-large", prompt=document)
+
+    collection = get_chromadb_collection()
+    embedding = response["embedding"]
+    collection.upsert(ids=[key], embeddings=[embedding], documents=[document])
+
+    return response
+
+
+@api_references_blueprint.route("/unembed/<string:key>", methods=["POST"])
+def unembed_reference_key(key: str):
+    key = urllib.parse.unquote_plus(key)
+
+    collection = get_chromadb_collection()
+    collection.delete(
+        ids=[key],
+    )
+
+    return "", 204
+
+
 @ui_references_blueprint.route("/")
 def index():
+    collection = get_chromadb_collection()
+    hits = collection.get(include=["metadatas"])
+    hits = hits["ids"]
+    logger.debug("hits %s", hits)
+
     references = []
     try:
         my_bucket = s3.Bucket(bucket_name)
         for file in my_bucket.objects.all():
-            references.append({"key": file.key})
+            references.append(
+                {
+                    "encodedKey": urllib.parse.quote_plus(file.key),
+                    "key": file.key,
+                    "embedded": True if file.key in hits else False,
+                }
+            )
     except ClientError as e:
         logger.error(e)
+
     logger.debug("list references %s", references)
+
     return render_template("references/list.html", references=references)
 
 
 @ui_references_blueprint.route("/<string:key>", methods=["GET"])
 def download_reference(key: str):
+    key = urllib.parse.unquote_plus(key)
+
     logger.debug("download reference %s", key)
     try:
         reference = s3_client.get_object(Bucket=bucket_name, Key=key)
@@ -69,6 +117,8 @@ def upload_reference():
 
 @ui_references_blueprint.route("/<string:key>/delete", methods=["GET"])
 def delete_reference(key: str):
+    key = urllib.parse.unquote_plus(key)
+
     try:
         s3_client.delete_object(Bucket=bucket_name, Key=key)
         flash(f"Reference with key '{key}' deleted.")

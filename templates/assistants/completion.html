@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="d-flex flex-column gap-2" style="height: calc(100vh - 128px);">
-    <div id="messages" class="flex-grow-1"></div>
-    <form action="" class="d-flex align-items-center" id="promptForm" method="POST">
-        <input autocomplete="off" class="form-control form-control-sm me-2" id="promptInput" type="text" name="prompt" required>
-        <button class="btn btn-primary btn-sm" type="submit">Send</button>
-    </form>
-</div>
-<script>
+    <div class="d-flex flex-column gap-2" style="height: calc(100vh - 128px);">
+        <div id="messages" class="flex-grow-1"></div>
+        <form action=""
+              class="d-flex align-items-center"
+              id="promptForm"
+              method="POST">
+            <input autocomplete="off"
+                   class="form-control form-control-sm me-2"
+                   id="promptInput"
+                   type="text"
+                   name="prompt"
+                   required>
+            <button class="btn btn-primary btn-sm" type="submit">Send</button>
+        </form>
+    </div>
+    <script>
     const messagesContainerElement = document.getElementById("messages");
     const formElement = document.getElementById("promptForm");
 
@@ -38,7 +45,7 @@
         promptInput.value = ""
         
         messageParagraphElement = addMessageElement();
-        fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/prompt", {
+        fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/completion", {
                 body: JSON.stringify({"prompt": formData.get("prompt")}),
                 headers: {
                     'Accept': 'application/json',
@@ -81,5 +88,5 @@
         });
         messageParagraphElement.innerText
     }   
-</script>
+    </script>
 {% endblock %}
