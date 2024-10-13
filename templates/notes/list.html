@@ -8,7 +8,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title text-truncate">{{ note.title }}</h5>
-            <p class="card-text font-monospace mb-0 text-secondary">{{ note.updated_at }}</p>
+            <p class="card-text font-monospace mb-0 text-secondary">{{ note.updated_at.strftime('%Y-%m-%d %H:%M:%S %Z') }}</p>
             <a class="stretched-link" data-note-title="{{ note.title }}" href="{{ url_for('ui.notes_ui.detail', note_id=note.id) }}"></a>
             <a class="btn btn-danger btn-sm" href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
         </div>
