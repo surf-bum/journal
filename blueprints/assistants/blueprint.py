@@ -8,6 +8,7 @@ from flask import (
     request,
 )
 
+import settings
 from utils import get_chromadb_collection, setup_logger
 
 logger = setup_logger(__name__)
@@ -27,7 +28,7 @@ def prompt_assistant():
     prompt = data.get("prompt", "Why is the sky blue?")
 
     r = requests.post(
-        "http://127.0.0.1:11434/api/generate",
+        f"http://{settings.OLLAMA_HOST}:11434/api/generate",
         json={"model": model.get("name"), "prompt": prompt},
         stream=True,
     )
@@ -56,7 +57,7 @@ def query_assistant():
     data = results["documents"][0][0]
 
     r = requests.post(
-        "http://127.0.0.1:11434/api/generate",
+        f"http://{settings.OLLAMA_HOST}:11434/api/generate",
         json={
             "model": model.get("name"),
             "prompt": f"Using this data: {data}. Respond to this prompt: {prompt}",
