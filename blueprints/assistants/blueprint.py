@@ -8,7 +8,7 @@ from flask import (
     request,
 )
 
-import settings
+from config import settings
 from utils import get_chromadb_collection, setup_logger
 
 logger = setup_logger(__name__)
