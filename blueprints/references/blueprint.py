@@ -43,7 +43,7 @@ def index():
 def download_reference(key: str):
     logger.debug("download reference %s", key)
     try:
-        reference = s3_client.get_object(Bucket=bucket_name, Key=file.key)
+        reference = s3_client.get_object(Bucket=bucket_name, Key=key)
         file_stream = reference["Body"]
         return send_file(file_stream, as_attachment=True, download_name=key)
     except ClientError as e:
