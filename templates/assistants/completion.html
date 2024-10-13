@@ -61,7 +61,7 @@
                     let chunk = decoder.decode(value, { stream: true });
                     const messages = chunk.split("\n");
                     messages.forEach(_message=>{
-                        if(!_message){
+                        if(!_message.trim()){
                             return;
                         }
 
