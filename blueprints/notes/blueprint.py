@@ -90,7 +90,7 @@ def backup_restore_notes():
         if "backup" in request.form:
             notes = Note.all()
 
-            deserialized_notes = [note.json() for note in notes]
+            deserialized_notes = [note.model_dump_json() for note in notes]
             backup_file_name = "notes.json"
             with open(backup_file_name, "w") as json_file:
                 deserialized_notes = [json.loads(_note) for _note in deserialized_notes]
