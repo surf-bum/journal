@@ -94,9 +94,13 @@
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="alert alert-secondary d-flex justify-content-between" role="alert">
+                                <div class="alert alert-secondary d-flex justify-content-between"
+                                     role="alert">
                                     <p class="mb-0">{{ message }}</p>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
                                 </div>
                             {% endfor %}
                         {% endif %}
