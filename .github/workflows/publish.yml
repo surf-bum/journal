@@ -1,11 +1,9 @@
-name: Create and publish a Docker image
+name: Publish
 
 on:
-  workflow_run:
-    workflows: ["quality-control"]
-    branches: [main]
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io

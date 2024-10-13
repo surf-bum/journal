@@ -15,7 +15,11 @@ logger.debug("Received command %s", command)
 python = shutil.which("python")
 logger.debug("Using python %s", python)
 
-if command == "runserver":
+if command == "gunicorn":
+    gunicorn = shutil.which("gunicorn")
+    logger.debug("Using gunicorn %s", gunicorn)
+    os.execv(gunicorn, [gunicorn, "app:app"])
+elif command == "runserver":
     flask = shutil.which("flask")
     logger.debug("Using flask %s", flask)
     os.execv(flask, [flask, "run", "--debug"])

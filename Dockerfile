@@ -13,4 +13,6 @@ COPY blueprints .
 COPY orm .
 COPY settings .
 COPY templates .
-COPY app.py manage.py utils.py ./
+COPY app.py gunicorn.conf.py manage.py utils.py ./
+
+CMD ["python", "manage.py", "gunicorn"]
