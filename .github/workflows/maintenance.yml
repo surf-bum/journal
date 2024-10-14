@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: snok/container-retention-policy@v3.0.0
         with:
-          account: xcvbn23
+          account: user
           cut-off: 1h
           tag-selection: untagged
           token: ${{ secrets.GITHUB_TOKEN }}
