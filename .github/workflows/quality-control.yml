@@ -1,8 +1,6 @@
 name: "Quality Control"
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 jobs:
   "quality-control":
     runs-on: ubuntu-latest
