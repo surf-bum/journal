@@ -16,8 +16,8 @@ logger = setup_logger(__name__)
 api_assistants_blueprint = Blueprint("assistants_api", __name__)
 ui_assistants_blueprint = Blueprint("assistants_ui", __name__)
 
-MODEL_REGISTRY = {"gemma2": {"name": "gemma2"}, "gemma2:27b": {"name": "gemma2:27b"}, "llama3.1": {"name": "llama3.1"}}
-model = MODEL_REGISTRY.get("gemma2")
+MODEL_REGISTRY = {"gemma2:27b": {"name": "gemma2:27b"}, "llama3.1:8b": {"name": "llama3.1:8b"}}
+model = MODEL_REGISTRY.get("gemma2:27b")
 
 
 @api_assistants_blueprint.route(
