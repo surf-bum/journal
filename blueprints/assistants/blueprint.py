@@ -37,7 +37,7 @@ def prompt_assistant():
         return {"error": "Streaming request failed"}, r.status_code
 
     def generate():
-        for chunk in r.iter_content(chunk_size=1024 * 32):
+        for chunk in r.iter_content(chunk_size=1024 * 4):
             if chunk:  # Filter out KeepAlive
                 yield chunk
 
@@ -69,7 +69,7 @@ def query_assistant():
         return {"error": "Streaming request failed"}, r.status_code
 
     def generate():
-        for chunk in r.iter_content(chunk_size=1024 * 32):
+        for chunk in r.iter_content(chunk_size=1024 * 4):
             if chunk:  # Filter out KeepAlive
                 yield chunk
 
