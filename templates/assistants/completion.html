@@ -2,16 +2,16 @@
 {% block content %}
     <div class="d-flex flex-column gap-2 h-100">
         <div class="flex-grow-1" id="messages"></div>
-        <form class="d-flex align-items-center"
-              id="promptForm"
-              method="POST"
-              style="margin-bottom: 48px">
-            <input autocomplete="off"
-                   class="form-control form-control-sm me-2"
-                   id="promptInput"
-                   type="text"
-                   name="prompt"
-                   required>
+        <form id="promptForm" method="POST" style="margin-bottom: 48px">
+            <div class="form-group">
+                <textarea autocomplete="off"
+                          class="form-control mb-2"
+                          id="promptInput"
+                          name="prompt"
+                          rows="4"
+                          type="text"
+                          required></textarea>
+            </div>
             <button class="btn btn-primary btn-sm" type="submit">Send</button>
         </form>
     </div>
