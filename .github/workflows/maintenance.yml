@@ -14,7 +14,8 @@ jobs:
         with:
           account: user
           cut-off: 1h
-          tag-selection: untagged
-          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: "journal"
           keep-n-most-recent: 3
           rust-log: debug
+          tag-selection: untagged
+          token: ${{ secrets.GITHUB_TOKEN }}
