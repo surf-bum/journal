@@ -104,4 +104,4 @@ logconfig_dict = {
 }
 workers = 1
 worker_class = "sync"
-timeout = 15
+timeout = 60
