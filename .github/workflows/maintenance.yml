@@ -13,6 +13,8 @@ jobs:
       - uses: snok/container-retention-policy@v3.0.0
         with:
           account: xcvbn23
+          cut-off: 1h
+          tag-selection: untagged
           token: ${{ secrets.GITHUB_TOKEN }}
           keep-n-most-recent: 3
           rust-log: debug
