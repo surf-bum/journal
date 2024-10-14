@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    name: Prune images
+    steps:
+      - uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: xcvbn23
+          token: token: ${{ secrets.GITHUB_TOKEN }}
+          keep-n-most-recent: 3
+          rust-log: debug
