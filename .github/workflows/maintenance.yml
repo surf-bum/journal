@@ -14,6 +14,7 @@ jobs:
         with:
           account: user
           cut-off: 1h
+          image-names: "journal"
           keep-n-most-recent: 3
           rust-log: debug
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CONTAINER_RETENTION_POLICY_TOKEN }}
