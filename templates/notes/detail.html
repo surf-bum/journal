@@ -59,17 +59,15 @@
         const rows = Math.floor(availableHeight / lineHeight)
         textArea.rows = rows - 1;
     }
+   
+    function renderMarkdown(markdown) {
+        return marked.parse(markdown);
+    }
 
     const editButton = document.getElementById('editButton');
     const editForm = document.getElementById('editNote');
     const editEditor = document.getElementById('editEditor');
     const noteContentTextArea = document.getElementById('noteContentTextArea');
-
-    
-    function renderMarkdown(markdown) {
-        return marked.parse(markdown);
-    }
-
 
     let content = ""
     fetch("/api/v1/notes/{{ note.id }}/content")
