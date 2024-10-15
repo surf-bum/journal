@@ -7,17 +7,15 @@ import json_log_formatter
 
 class JsonRequestFormatter(json_log_formatter.JSONFormatter):
     def json_record(
-            self,
-            message: str,
-            extra: dict[str, str | int | float],
-            record: logging.LogRecord
+        self,
+        message: str,
+        extra: dict[str, str | int | float],
+        record: logging.LogRecord,
     ) -> dict[str, str | int | float]:
         # Convert the log record to a JSON object.
         # See https://docs.gunicorn.org/en/stable/settings.html#access-log-format
 
-        response_time = datetime.strptime(
-            record.args["t"], "[%d/%b/%Y:%H:%M:%S %z]"
-        )
+        response_time = datetime.strptime(record.args["t"], "[%d/%b/%Y:%H:%M:%S %z]")
         url = record.args["U"]
         if record.args["q"]:
             url += f"?{record.args['q']}"
@@ -37,10 +35,10 @@ class JsonRequestFormatter(json_log_formatter.JSONFormatter):
 
 class JsonErrorFormatter(json_log_formatter.JSONFormatter):
     def json_record(
-            self,
-            message: str,
-            extra: dict[str, str | int | float],
-            record: logging.LogRecord
+        self,
+        message: str,
+        extra: dict[str, str | int | float],
+        record: logging.LogRecord,
     ) -> dict[str, str | int | float]:
         payload: dict[str, str | int | float] = super().json_record(
             message, extra, record
@@ -60,6 +58,7 @@ def post_fork(server, worker):
     # tracer_provider.add_span_processor(span_processor)
     #
     # Psycopg2Instrumentor().instrument(enable_commenter=True, commenter_options={})
+
 
 accesslog = "-"
 bind = "0.0.0.0:8000"

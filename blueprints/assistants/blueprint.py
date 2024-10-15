@@ -16,20 +16,29 @@ logger = setup_logger(__name__)
 api_assistants_blueprint = Blueprint("assistants_api", __name__)
 ui_assistants_blueprint = Blueprint("assistants_ui", __name__)
 
-MODEL_REGISTRY = {"gemma2:27b": {"name": "gemma2:27b"}, "llama3.1:8b": {"name": "llama3.1:8b"}}
+MODEL_REGISTRY = {
+    "gemma2:27b": {"name": "gemma2:27b"},
+    "llama3.1:8b": {"name": "llama3.1:8b"},
+}
 model = MODEL_REGISTRY.get("gemma2:27b")
 
 
-@api_assistants_blueprint.route(
-    "/fake-uuid/sessions/fake-uuid/completion", methods=["POST"]
-)
+@api_assistants_blueprint.route("/fake-uuid/sessions/fake-uuid/chat", methods=["POST"])
 def prompt_assistant():
     data = request.get_json()
-    prompt = data.get("prompt", "Why is the sky blue?")
+    messages = data.get("messages")
+    if not messages:
+        return {"error": {"message": "Invalid request."}}, 400
+
+    payload = {
+        "model": model.get("name"),
+        "messages": messages,
+    }
+    logger.debug(payload)
 
     r = requests.post(
-        f"http://{settings.OLLAMA_HOST}:11434/api/generate",
-        json={"model": model.get("name"), "prompt": prompt},
+        f"http://{settings.OLLAMA_HOST}:11434/api/chat",
+        json=payload,
         stream=True,
     )
 
