@@ -57,9 +57,9 @@ def prompt_assistant():
 def query_assistant():
     data = request.get_json()
     prompt = data.get("prompt")
-    logger.debug("prompt %s", prompt)
 
     response = ollama.embeddings(prompt=prompt, model="mxbai-embed-large")
+    logger.debug("Generated prompt embeddings.")
 
     collection = get_chromadb_collection()
     results = collection.query(query_embeddings=[response["embedding"]], n_results=1)
@@ -91,9 +91,9 @@ def list_assistants():
     return render_template("assistants/list.html", assistants=assistants)
 
 
-@ui_assistants_blueprint.route("/<string:assistant>/completion", methods=["GET"])
+@ui_assistants_blueprint.route("/<string:assistant>/chat", methods=["GET"])
 def view_assistant_completion(assistant: str):
-    return render_template("assistants/completion.html")
+    return render_template("assistants/chat.html")
 
 
 @ui_assistants_blueprint.route("/<string:assistant>/query", methods=["GET"])

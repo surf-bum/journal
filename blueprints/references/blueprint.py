@@ -1,5 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
+import nltk
+from nltk.tokenize import word_tokenize 
 
 from flask import (
     Blueprint,
@@ -36,9 +38,10 @@ def embed_reference_key(key: str):
     reference = s3_client.get_object(Bucket=bucket_name, Key=key)
     file_stream = reference["Body"].read()
     document = file_stream.decode()
-    logger.debug("document %s", document)
+    logger.debug("Loaded document %s from storage.", key)
 
     response = ollama.embeddings(model="mxbai-embed-large", prompt=document)
+    logger.debug("Generated embeddings for reference document %s", key)
 
     collection = get_chromadb_collection()
     embedding = response["embedding"]
