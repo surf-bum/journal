@@ -1,7 +1,5 @@
 import boto3
 from botocore.exceptions import ClientError
-import nltk
-from nltk.tokenize import word_tokenize 
 
 from flask import (
     Blueprint,
