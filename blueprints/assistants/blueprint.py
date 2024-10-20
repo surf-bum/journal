@@ -24,7 +24,7 @@ model = MODEL_REGISTRY.get("gemma2:27b")
 
 
 @api_assistants_blueprint.route("/fake-uuid/sessions/fake-uuid/chat", methods=["POST"])
-def prompt_assistant():
+async def prompt_assistant():
     data = request.get_json()
     messages = data.get("messages")
     if not messages:
@@ -54,7 +54,7 @@ def prompt_assistant():
 
 
 @api_assistants_blueprint.route("/fake-uuid/sessions/fake-uuid/query", methods=["POST"])
-def query_assistant():
+async def query_assistant():
     data = request.get_json()
     prompt = data.get("prompt")
 
@@ -86,16 +86,16 @@ def query_assistant():
 
 
 @ui_assistants_blueprint.route("/", methods=["GET"])
-def list_assistants():
+async def list_assistants():
     assistants = [model]
     return render_template("assistants/list.html", assistants=assistants)
 
 
 @ui_assistants_blueprint.route("/<string:assistant>/chat", methods=["GET"])
-def view_assistant_completion(assistant: str):
+async def view_assistant_completion(assistant: str):
     return render_template("assistants/chat.html")
 
 
 @ui_assistants_blueprint.route("/<string:assistant>/query", methods=["GET"])
-def view_assistant_query(assistant: str):
+async def view_assistant_query(assistant: str):
     return render_template("assistants/query.html")
