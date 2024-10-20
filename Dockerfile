@@ -14,6 +14,6 @@ COPY orm ./orm
 COPY settings ./settings
 
 COPY app ./app
-COPY gunicorn.conf.py manage.py ./
+COPY gunicorn.conf.py manage.py utils.py ./
 
 CMD ["python", "manage.py", "gunicorn"]
