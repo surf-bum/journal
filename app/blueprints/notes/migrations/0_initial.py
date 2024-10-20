@@ -1,4 +1,4 @@
-from blueprints.notes.models import Note
+from app.blueprints.notes.models import Note
 
 
 def forward():

@@ -9,10 +9,11 @@ RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY blueprints ./blueprints
+# TODO make orm and settings standalone libraries
 COPY orm ./orm
 COPY settings ./settings
-COPY templates ./templates
-COPY app.py config.py gunicorn.conf.py manage.py utils.py ./
+
+COPY app ./app
+COPY gunicorn.conf.py manage.py ./
 
 CMD ["python", "manage.py", "gunicorn"]

@@ -18,11 +18,11 @@ logger.debug("Using python %s", python)
 if command == "gunicorn":
     gunicorn = shutil.which("gunicorn")
     logger.debug("Using gunicorn %s", gunicorn)
-    os.execv(gunicorn, [gunicorn, "app:app"])
+    os.execv(gunicorn, [gunicorn, "app.serve:flask_app"])
 elif command == "runserver":
     flask = shutil.which("flask")
     logger.debug("Using flask %s", flask)
-    os.execv(flask, [flask, "run", "--debug"])
+    os.execv(flask, [flask, "--app", "app.serve:flask_app", "run", "--debug"])
 elif command == "makemigrations":
     os.execv(python, [python, "-m", "orm.makemigrations"])
 elif command == "migrate":
