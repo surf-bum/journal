@@ -6,10 +6,7 @@ on:
     - cron: "0 2 * * *"
 
 jobs:
-  maintenance:
-    env:
-      RENOVATE_PLATFORM: 'github'
-      RENOVATE_REPOSITORIES: "https://github.com/surf-bum/journal"
+  "prune-old-containers":
     runs-on: ubuntu-latest
     steps:
       - name: Prune images
@@ -21,8 +18,14 @@ jobs:
           keep-n-most-recent: 3
           rust-log: debug
           token: ${{ secrets.CONTAINER_RETENTION_POLICY_TOKEN }}
+  "manage-dependencies":
+    env:
+      RENOVATE_PLATFORM: 'github'
+      RENOVATE_REPOSITORIES: "https://github.com/surf-bum/journal"
+    runs-on: ubuntu-latest
+    steps:
       - name: "renovatebot"
         run: |
           npm i renovate@38.128.3
-          renovate
+          npx renovate
     
