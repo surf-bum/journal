@@ -29,7 +29,7 @@ ui_references_blueprint = Blueprint("references_ui", __name__)
 
 
 @api_references_blueprint.route("/embed/<string:key>", methods=["POST"])
-def embed_reference_key(key: str):
+async def embed_reference_key(key: str):
     key = urllib.parse.unquote_plus(key)
 
     logger.debug("embed key %s data %s", key)
@@ -49,7 +49,7 @@ def embed_reference_key(key: str):
 
 
 @api_references_blueprint.route("/unembed/<string:key>", methods=["POST"])
-def unembed_reference_key(key: str):
+async def unembed_reference_key(key: str):
     key = urllib.parse.unquote_plus(key)
 
     collection = get_chromadb_collection()
@@ -61,7 +61,7 @@ def unembed_reference_key(key: str):
 
 
 @ui_references_blueprint.route("/")
-def index():
+async def index():
     collection = get_chromadb_collection()
     hits = collection.get(include=["metadatas"])
     hits = hits["ids"]
@@ -87,7 +87,7 @@ def index():
 
 
 @ui_references_blueprint.route("/<string:key>", methods=["GET"])
-def download_reference(key: str):
+async def download_reference(key: str):
     key = urllib.parse.unquote_plus(key)
 
     logger.debug("download reference %s", key)
@@ -102,7 +102,7 @@ def download_reference(key: str):
 
 
 @ui_references_blueprint.route("/upload", methods=["POST"])
-def upload_reference():
+async def upload_reference():
     key = request.form["key"]
 
     try:
@@ -117,7 +117,7 @@ def upload_reference():
 
 
 @ui_references_blueprint.route("/<string:key>/delete", methods=["GET"])
-def delete_reference(key: str):
+async def delete_reference(key: str):
     key = urllib.parse.unquote_plus(key)
 
     try:

@@ -22,13 +22,13 @@ ui_notes_blueprint = Blueprint("notes_ui", __name__)
 
 
 @ui_notes_blueprint.route("/")
-def index():
+async def index():
     notes = Note.all()
     return render_template("notes/list.html", notes=notes)
 
 
 @ui_notes_blueprint.route("/<uuid:note_id>", methods=["GET"])
-def detail(note_id):
+async def detail(note_id):
     note = Note.get(note_id)
     if note:
         return render_template("notes/detail.html", note=note)
@@ -38,7 +38,7 @@ def detail(note_id):
 
 
 @ui_notes_blueprint.route("/<uuid:note_id>/update", methods=["POST"])
-def update_note(note_id):
+async def update_note(note_id):
     title = request.form["title"]
     content = request.form["content"]
 
@@ -57,7 +57,7 @@ def update_note(note_id):
 
 
 @ui_notes_blueprint.route("/create", methods=["POST"])
-def create_note():
+async def create_note():
     title = request.form["title"]
     content = request.form["content"]
 
@@ -77,7 +77,7 @@ def create_note():
 
 
 @ui_notes_blueprint.route("/<uuid:note_id>/delete", methods=["GET"])
-def delete_note(note_id: uuid.UUID):
+async def delete_note(note_id: uuid.UUID):
     note = Note.get(note_id)
     if note:
         note.delete()
@@ -86,7 +86,7 @@ def delete_note(note_id: uuid.UUID):
 
 
 @ui_notes_blueprint.route("/backup-restore", methods=["GET", "POST"])
-def backup_restore_notes():
+async def backup_restore_notes():
     if request.method == "POST":
         if "backup" in request.form:
             notes = Note.all()
@@ -117,7 +117,7 @@ def backup_restore_notes():
 
 
 @api_notes_blueprint.route("/<uuid:note_id>/content", methods=["GET"])
-def note_content(note_id):
+async def note_content(note_id):
     note = Note.get(note_id)
     if not note:
         return {"error": {"message": "Detail not found."}}

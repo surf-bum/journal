@@ -1,7 +1,7 @@
 import logging
 
-import chromadb
-from chromadb import Collection
+# import chromadb
+# from chromadb import Collection
 from json_log_formatter import JSONFormatter
 
 
@@ -21,9 +21,10 @@ def setup_logger(mod, log_level=logging.DEBUG) -> logging.Logger:
 chromadb_collection = None
 
 
-def get_chromadb_collection() -> Collection:
-    if chromadb_collection:
-        return chromadb_collection
+def get_chromadb_collection():
+    # if chromadb_collection:
+    #     return chromadb_collection
 
-    client = chromadb.PersistentClient(path="chromadb-data")
-    return client.get_or_create_collection(name="docs")
+    # client = chromadb.PersistentClient(path="chromadb-data")
+    # return client.get_or_create_collection(name="docs")
+    pass
