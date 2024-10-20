@@ -20,5 +20,5 @@ jobs:
           token: ${{ secrets.CONTAINER_RETENTION_POLICY_TOKEN }}
       - name: "renovatebot"
         run: |
-          npm i renovatebot@38.128.3
+          npm i renovate@38.128.3
     
