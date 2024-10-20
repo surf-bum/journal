@@ -22,7 +22,7 @@ jobs:
     env:
       RENOVATE_PLATFORM: 'github'
       RENOVATE_REPOSITORIES: "https://github.com/surf-bum/journal"
-      RENOVATE_TOKEN: {{ secrets.RENOVATE_TOKEN }}
+      RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: "renovatebot"
