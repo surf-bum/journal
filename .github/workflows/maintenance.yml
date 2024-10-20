@@ -6,11 +6,11 @@ on:
     - cron: "0 2 * * *"
 
 jobs:
-  clean:
+  maintenance:
     runs-on: ubuntu-latest
-    name: Prune images
     steps:
-      - uses: snok/container-retention-policy@v3.0.0
+      - name: Prune images
+        uses: snok/container-retention-policy@v3.0.0
         with:
           account: user
           cut-off: 1h
@@ -18,3 +18,7 @@ jobs:
           keep-n-most-recent: 3
           rust-log: debug
           token: ${{ secrets.CONTAINER_RETENTION_POLICY_TOKEN }}
+      - name: "renovatebot"
+        run: |
+          npm i renovatebot@38.128.3
+    
