@@ -26,10 +26,10 @@ def page(browser_context):
 
 @pytest.fixture(scope="module")
 def app():
-    from app import app
+    from app.serve import flask_app
 
-    app.config["TESTING"] = True
-    yield app
+    flask_app.config["TESTING"] = True
+    yield flask_app
 
 
 @pytest.fixture(scope="module")

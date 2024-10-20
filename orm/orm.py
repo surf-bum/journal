@@ -4,7 +4,7 @@ import datetime
 
 import psycopg2.extras
 
-from config import settings
+from app.config import settings
 
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel

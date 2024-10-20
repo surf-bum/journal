@@ -1,18 +1,18 @@
 from flask import Blueprint, Flask
 
-from blueprints.assistants.blueprint import (
+from app.blueprints.assistants.blueprint import (
     api_assistants_blueprint,
     ui_assistants_blueprint,
 )
-from blueprints.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
-from blueprints.references.blueprint import (
+from app.blueprints.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
+from app.blueprints.references.blueprint import (
     api_references_blueprint,
     ui_references_blueprint,
 )
-from config import settings
+from app.config import settings
 
-app = Flask(__name__)
-app.secret_key = settings.SECRET_KEY
+flask_app = Flask(__name__)
+flask_app.secret_key = settings.SECRET_KEY
 
 api_blueprint = Blueprint("api", __name__)
 api_blueprint.register_blueprint(api_assistants_blueprint, url_prefix="/assistants")
@@ -25,5 +25,5 @@ ui_blueprint.register_blueprint(ui_notes_blueprint, url_prefix="/notes")
 ui_blueprint.register_blueprint(ui_references_blueprint, url_prefix="/references")
 
 
-app.register_blueprint(api_blueprint, url_prefix="/api/v1")
-app.register_blueprint(ui_blueprint, url_prefix="/ui")
+flask_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+flask_app.register_blueprint(ui_blueprint, url_prefix="/ui")
