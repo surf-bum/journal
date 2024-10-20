@@ -29,6 +29,7 @@ def app():
     from app.serve import flask_app
 
     flask_app.config["TESTING"] = True
+    
     yield flask_app
 
 
