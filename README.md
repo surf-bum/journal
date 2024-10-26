@@ -35,3 +35,6 @@ Only Postgres or derivant are supported. Default value is `postgres://postgres:p
 #### Debug
 
     PW_DEBUG=1 pytest
+
+
+    piccolo migrations new notes --auto --desc="Adding name column"

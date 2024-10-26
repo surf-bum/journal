@@ -2,6 +2,7 @@ import json
 import tempfile
 import uuid
 
+from app.notes.manager import NoteManager
 from flask import (
     Blueprint,
     render_template,
@@ -14,7 +15,8 @@ from flask import (
 from datetime import datetime
 
 from app.utils import setup_logger
-from .models import Note
+from .tables import CellSerializer, Note, NoteSerializer
+
 
 logger = setup_logger(__name__)
 
@@ -24,15 +26,16 @@ ui_notes_blueprint = Blueprint("notes_ui", __name__)
 
 @ui_notes_blueprint.route("/")
 async def index():
-    notes = Note.all()
+    notes = await NoteManager.get_notes()
     return render_template("notes/list.html", notes=notes)
 
 
 @ui_notes_blueprint.route("/<uuid:note_id>", methods=["GET"])
-async def detail(note_id):
-    note = Note.get(note_id)
+async def get_note(note_id):
+    note = await NoteManager.get_note(note_id)
+    cells = await NoteManager.get_cells(note_id)
     if note:
-        return render_template("notes/detail.html", note=note)
+        return render_template("notes/detail.html", cells=cells, note=note)
     else:
         flash("Note not found!")
         return redirect(url_for("ui.notes_ui.index"))
@@ -54,7 +57,22 @@ async def update_note(note_id):
     else:
         flash("Note not found!")
 
-    return redirect(url_for("ui.notes_ui.detail", note_id=note.id))
+    return redirect(url_for("ui.notes_ui.get_note", note_id=note.id))
+
+
+@ui_notes_blueprint.route(
+    "/notes/<uuid:note_id>/cells/<uuid:cell_id>/update", methods=["POST"]
+)
+async def update_cell(cell_id, note_id):
+    title = request.form["title"]
+    content = request.form["content"]
+
+    cell = await NoteManager.get_cell(cell_id)
+    cell.title = title
+    cell.content = json.dumps({"body": content})
+    await NoteManager.update_cell(cell)
+
+    return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
 
 
 @ui_notes_blueprint.route("/create", methods=["POST"])
@@ -63,13 +81,23 @@ async def create_note():
     content = request.form["content"]
 
     if title and content:
-        new_note = Note(
-            title=title,
-            content=content,
+        new_note = NoteSerializer(
+            id=uuid.uuid4(),
             created_at=datetime.now(),
+            title=title,
             updated_at=datetime.now(),
         )
-        new_note.save()
+        new_cell = CellSerializer(
+            id=uuid.uuid4(),
+            content=json.dumps({"body": content}),
+            created_at=datetime.now(),
+            note=new_note.id,
+            title=title,
+            updated_at=datetime.now(),
+            plugin="markdown",
+        )
+        new_note = await NoteManager.create_note(new_note, [new_cell])
+        print(new_note)
         flash(f"Note '{new_note.title}' created successfully!")
     else:
         flash("Please provide both title and content!")
@@ -77,11 +105,22 @@ async def create_note():
     return redirect(url_for("ui.notes_ui.index"))
 
 
+@ui_notes_blueprint.route(
+    "/<uuid:note_id>/cells/<uuid:cell_id>/delete", methods=["GET"]
+)
+async def delete_cell(cell_id: uuid.UUID, note_id: uuid.UUID):
+    note = await NoteManager.get_cell(cell_id)
+    if note:
+        await NoteManager.delete_cell(cell_id)
+        flash("Cell deleted successfully!")
+    return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
+
+
 @ui_notes_blueprint.route("/<uuid:note_id>/delete", methods=["GET"])
 async def delete_note(note_id: uuid.UUID):
-    note = Note.get(note_id)
+    note = await NoteManager.get_note(note_id)
     if note:
-        note.delete()
+        await NoteManager.delete_note(note_id)
         flash("Note deleted successfully!")
     return redirect(url_for("ui.notes_ui.index"))
 
@@ -90,7 +129,7 @@ async def delete_note(note_id: uuid.UUID):
 async def backup_restore_notes():
     if request.method == "POST":
         if "backup" in request.form:
-            notes = Note.all()
+            notes = await NoteManager.get_notes()
 
             deserialized_notes = [note.model_dump_json() for note in notes]
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as json_file:
@@ -108,20 +147,40 @@ async def backup_restore_notes():
                 logger.debug("Passed .json file check.")
                 notes_to_restore = json.load(file)
                 logger.debug("Serialized %s.", notes_to_restore)
+
                 for note in notes_to_restore:
-                    new_note = Note(**note)
-                    new_note.id = None
-                    new_note.save()
+                    content = note.get("content")
+                    title = note.get("title")
+
+                    new_note = NoteSerializer(
+                        id=uuid.uuid4(),
+                        created_at=datetime.now(),
+                        title=title,
+                        updated_at=datetime.now(),
+                    )
+                    new_cell = CellSerializer(
+                        id=uuid.uuid4(),
+                        content=json.dumps({"body": content}),
+                        created_at=datetime.now(),
+                        note=new_note.id,
+                        title=title,
+                        updated_at=datetime.now(),
+                        plugin="markdown",
+                    )
+                    new_note = await NoteManager.create_note(new_note, [new_cell])
+
                 return redirect(url_for("ui.notes_ui.backup_restore_notes"))
 
-    notes = Note.all()
+    notes = await NoteManager.get_notes()
     return render_template("notes/backup_restore.html", notes=notes)
 
 
-@api_notes_blueprint.route("/<uuid:note_id>/content", methods=["GET"])
-async def note_content(note_id):
-    note = Note.get(note_id)
-    if not note:
+@api_notes_blueprint.route(
+    "/<uuid:note_id>/cells/<uuid:cell_id>/content", methods=["GET"]
+)
+async def cell_content(cell_id, note_id):
+    cell = await NoteManager.get_cell(cell_id)
+    if not cell:
         return {"error": {"message": "Detail not found."}}
 
-    return {"content": note.content}
+    return {"content": cell.content}

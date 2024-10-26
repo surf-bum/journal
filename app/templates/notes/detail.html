@@ -6,90 +6,106 @@
     <li class="breadcrumb-item" aria-current="page">{{ note.title }}</li>
 {% endblock %}
 {% block content %}
-    <div class="h-100" id="renderedContent">
-        <div class="d-flex flex-column h-100 gap-2">
-            <div class="d-flex flex-wrap justify-content-between align-items-center">
-                <p class="h2 text-truncate">{{ note.title }}</p>
-                <div>
-                    <button id="editButton" class="btn btn-primary btn-sm">Edit</button>
-                    <a class="btn btn-danger btn-sm"
-                       href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
-                </div>
+    <div class="d-flex flex-column gap-2">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <p class="h2 text-truncate">{{ note.title }}</p>
+            <div>
+                <button id="editNoteButton" class="btn btn-primary btn-sm">Edit note</button>
+                <a class="btn btn-danger btn-sm"
+                   href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
             </div>
-            <div id="markdown" class="border h-100 overflow-auto p-2"></div>
         </div>
     </div>
-    <form id="editNote"
-          action="{{ url_for('ui.notes_ui.update_note', note_id=note.id) }}"
-          method="POST"
-          class="h-75 mt-3"
-          style="display: none">
-        <div class="form-group">
-            <label for="exampleFormControlInput1">Title</label>
-            <input class="form-control"
-                   name="title"
-                   value="{{ note.title }}"
-                   type="text"
-                   required>
+    {% for cell in cells %}
+        <div>
+            <div class="h-100" id="cellViewerContainer-{{ cell.id }}">
+                <div class="d-flex flex-column h-100 gap-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <p class="h4 text-truncate">{{ cell.title }}</p>
+                        <div>
+                            <button id="cellEditButton-{{ cell.id }}" class="btn btn-primary btn-sm">Edit cell</button>
+                            <a class="btn btn-danger btn-sm"
+                               href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}">Delete</a>
+                        </div>
+                    </div>
+                    <div id="cellViewer-{{ cell.id }}" class="border h-100 overflow-auto p-2"></div>
+                </div>
+            </div>
+            <form id="cellEditForm-{{ cell.id }}"
+                  action="{{ url_for('ui.notes_ui.update_cell', cell_id=cell.id, note_id=note.id) }}"
+                  method="POST"
+                  class="h-75 mt-3"
+                  style="display: none">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Title</label>
+                    <input class="form-control"
+                           name="title"
+                           value="{{ note.title }}"
+                           type="text"
+                           required>
+                </div>
+                <div class="form-group h-100">
+                    <label for="cellEditFormTextArea-{{ cell.id }}">Content</label>
+                    <textarea class="form-control"
+                              name="content"
+                              id="cellEditFormTextArea-{{ cell.id }}"
+                              value="{{ cell.content }}"
+                              rows="9"
+                              required></textarea>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
+                    <a class="btn btn-danger btn-sm"
+                       href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}">Delete</a>
+                    <a class="btn btn-secondary btn-sm"
+                       href="{{ url_for('ui.notes_ui.get_note', note_id=note.id) }}">Cancel</a>
+                </div>
+            </form>
         </div>
-        <div class="form-group h-100">
-            <label for="exampleFormControlTextArea1">Content</label>
-            <textarea class="form-control"
-                      name="content"
-                      id="noteContentTextArea"
-                      value="{{ note.content }}"
-                      rows="9"
-                      required></textarea>
-        </div>
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-            <a class="btn btn-danger btn-sm"
-               href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}">Delete</a>
-            <a class="btn btn-secondary btn-sm"
-               href="{{ url_for('ui.notes_ui.detail', note_id=note.id) }}">Cancel</a>
-        </div>
-    </form>
+        <script>
+            const cellEditForm = document.getElementById('cellEditForm-{{ cell.id }}');
+            const editEditor = document.getElementById('editEditor-{{ cell.id }}');
+            const noteContentTextArea = document.getElementById('cellEditFormTextArea-{{ cell.id }}');
+            const cellEditButton = document.getElementById('cellEditButton-{{ cell.id }}');
+            const cellViewerContainer = document.getElementById('cellViewerContainer-{{ cell.id }}');
+            
+            let cellContent = "";
+            fetch("/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content")
+            .then(response=>response.json())
+            // TODO: Plugin system should just pass content into the plugin
+            .then(response=>response["content"]["body"])
+            .then(_content=>{
+                content = _content;
+                const renderedMarkdown = renderMarkdown(content);
+                const renderedMarkdownElement = document.getElementById('cellViewer-{{ cell.id }}');
+                renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
+            }).catch(error=>{
+                throw new Error(error);   
+            });
+            
+            cellEditButton.onclick = function () {
+                cellViewerContainer.style.display = 'none';
+                cellEditForm.style.display = 'block';
+
+                resizeTextArea(noteContentTextArea);
+                noteContentTextArea.value = content;
+                noteContentTextArea.focus();
+            };
+        </script>
+    {% endfor %}
     <script>
-    document.execCommand('defaultParagraphSeparator', false, 'p');
+        document.execCommand('defaultParagraphSeparator', false, 'p');
 
-    function resizeTextArea(textArea) {
-        const parent = textArea.parentElement;
-        const availableHeight = parent.clientHeight;
-        const lineHeight = parseInt(window.getComputedStyle(textArea).getPropertyValue('line-height'));
-        const rows = Math.floor(availableHeight / lineHeight)
-        textArea.rows = rows - 1;
-    }
-   
-    function renderMarkdown(markdown) {
-        return marked.parse(markdown);
-    }
-
-    const editButton = document.getElementById('editButton');
-    const editForm = document.getElementById('editNote');
-    const editEditor = document.getElementById('editEditor');
-    const noteContentTextArea = document.getElementById('noteContentTextArea');
-
-    let content = ""
-    fetch("/api/v1/notes/{{ note.id }}/content")
-    .then(response=>response.json())
-    .then(response=>response["content"])
-    .then(_content=>{
-        content = _content;
-        const renderedMarkdown = renderMarkdown(content);
-        const renderedMarkdownElement = document.getElementById('markdown');
-        renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
-    }).catch(error=>{
-        throw new Error(error);   
-    });
-
-    const renderedContent = document.getElementById('renderedContent');
-    editButton.onclick = function () {
-        renderedContent.style.display = 'none';
-        editForm.style.display = 'block';
-
-        resizeTextArea(noteContentTextArea);
-        noteContentTextArea.value = content;
-        noteContentTextArea.focus();
-    };
+        function resizeTextArea(textArea) {
+            const parent = textArea.parentElement;
+            const availableHeight = parent.clientHeight;
+            const lineHeight = parseInt(window.getComputedStyle(textArea).getPropertyValue('line-height'));
+            const rows = Math.floor(availableHeight / lineHeight)
+            textArea.rows = rows - 1;
+        }
+    
+        function renderMarkdown(markdown) {
+            return marked.parse(markdown);
+        }
     </script>
 {% endblock %}

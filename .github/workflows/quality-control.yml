@@ -37,5 +37,6 @@ jobs:
       - name: Tests
         run: |
           playwright install chromium
+          piccolo migrations forwards all
           pytest -vvv
         working-directory: app

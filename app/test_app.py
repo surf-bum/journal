@@ -92,9 +92,9 @@ def test_create_and_read_note(page: Page):
     assert page.is_visible(selector)
 
     # edit
-    page.get_by_role("button", name="Edit").click()
+    page.get_by_role("button", name="Edit cell").click()
     edited_content = "Edited content."
-    edit_content_textarea = page.locator('textarea[id="noteContentTextArea"]')
+    edit_content_textarea = page.locator('textarea[name="content"]')
     edit_content_textarea.fill("")
     edit_content_textarea.type(edited_content)
     page.get_by_role("button", name="Save changes").click()

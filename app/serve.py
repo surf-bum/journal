@@ -1,18 +1,24 @@
+from pathlib import Path
+import sys
+from app.utils import setup_logger
 from flask import Blueprint, Flask
 
-from app.blueprints.assistants.blueprint import (
+from app.assistants.blueprint import (
     api_assistants_blueprint,
     ui_assistants_blueprint,
 )
-from app.blueprints.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
-from app.blueprints.notes.models import Note
-from app.blueprints.references.blueprint import (
+from app.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
+from app.references.blueprint import (
     api_references_blueprint,
     ui_references_blueprint,
 )
 from app.config import settings
 
-Note.create_table()
+logger = setup_logger(__name__)
+
+root_folder = Path(__file__).resolve().parent
+logger.debug("Adding %s to PYTHON_PATH", root_folder)
+sys.path.append(str(root_folder))
 
 flask_app = Flask(__name__)
 flask_app.secret_key = settings.SECRET_KEY
