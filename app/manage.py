@@ -18,6 +18,7 @@ logger.debug("Using python %s", python)
 if command == "gunicorn":
     gunicorn = shutil.which("gunicorn")
     logger.debug("Using gunicorn %s", gunicorn)
+    shutil.copy("./gunicorn.conf.py", "../gunicorn.conf.py")
     os.chdir("..")
     os.execv(gunicorn, [gunicorn, "app.serve:flask_app"])
 elif command == "runserver":
