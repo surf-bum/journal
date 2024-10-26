@@ -57,11 +57,13 @@ async def list_plugins():
 
 @api_plugins_blueprint.route("/<uuid:plugin_id>", methods=["DELETE"])
 async def delete_plugin(plugin_id):
-    plugin = await PluginManager.delete_plugin(plugin_id)
+    plugin = await PluginManager.get_plugin(plugin_id) 
     if not plugin:
-        return {"error": {"message": "Detail not found."}}
-
+        return {"error": {"message": "Detail not found."}}, 404
+    
     storage.delete_file(plugin.path)
+
+    await PluginManager.delete_plugin(plugin.id)
 
     return "", 204
 
@@ -70,7 +72,7 @@ async def delete_plugin(plugin_id):
 async def get_plugin_content(plugin_id):
     plugin = await PluginManager.get_plugin(plugin_id)
     if not plugin:
-        return {"error": {"message": "Detail not found."}}
+        return {"error": {"message": "Detail not found."}}, 404
 
     content = storage.retrieve_file(plugin.path)
     content = content.read().decode()
