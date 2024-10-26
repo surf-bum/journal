@@ -1,6 +1,6 @@
 import datetime
 
-from orm.orm import SimpleORM
+from app.orm.orm import SimpleORM
 
 
 def test_create_table():

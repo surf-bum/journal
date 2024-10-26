@@ -5,11 +5,14 @@ from app.blueprints.assistants.blueprint import (
     ui_assistants_blueprint,
 )
 from app.blueprints.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
+from app.blueprints.notes.models import Note
 from app.blueprints.references.blueprint import (
     api_references_blueprint,
     ui_references_blueprint,
 )
 from app.config import settings
+
+Note.create_table()
 
 flask_app = Flask(__name__)
 flask_app.secret_key = settings.SECRET_KEY

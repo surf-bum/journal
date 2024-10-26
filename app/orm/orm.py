@@ -10,7 +10,7 @@ from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import List, Optional, Type, TypeVar
 
-from utils import setup_logger
+from app.utils import setup_logger
 
 psycopg2.extras.register_uuid()
 

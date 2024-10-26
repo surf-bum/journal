@@ -14,7 +14,7 @@ import ollama
 import urllib
 
 from app.config import settings
-from utils import get_chromadb_collection, setup_logger
+from app.utils import get_chromadb_collection, setup_logger
 
 logger = setup_logger(__name__)
 
