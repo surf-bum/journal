@@ -63,38 +63,51 @@ def server(app):
     yield
 
 
-def test_create_and_read_note(page: Page):
+def test_create_and_read_note_and_cell(page: Page):
     # create
     page.goto("http://127.0.0.1:15000/ui/notes")
-
     page.get_by_role("button", name="Create note").click()
     page.wait_for_selector("text='Create a new note'")
     assert page.is_visible("text='Create a new note'")
-
     random_suffix = str(uuid.uuid4())
     title = f"Foo-{random_suffix}"
     page.locator('input[name="title"]').type(title)
-    content = f"# Bar-{random_suffix}"
-    page.locator('textarea[name="content"]').type(content)
     page.get_by_label("Create a new note").get_by_role(
         "button", name="Create note"
     ).click()
-
     created_successfully_alert_text = f"Note '{title}' created successfully!"
     selector = f"text='{created_successfully_alert_text}'"
     page.wait_for_selector(selector)
     assert page.is_visible(selector)
 
-    # read
+    # read note
     page.get_by_role("heading", name=title).click(force=True)
     selector = f"text='{title}'"
     page.wait_for_selector(selector)
     assert page.is_visible(selector)
 
-    # edit
-    page.get_by_role("button", name="Edit cell").click()
+    # create cell
+    page.get_by_role("button", name="Create cell").click()
+    page.wait_for_selector("text='Create a new cell'")
+    assert page.is_visible("text='Create a new cell'")
+    title = f"Foo-Cell-{random_suffix}"
+    page.locator('input[name="title"]').type(title)
+    content = f"Bar-Cell-{random_suffix}"
+    page.locator('textarea[name="content"]').type(content)
+    page.locator('button[form="createCellForm"][type="submit"]').click()
+
+    # read cell title, content
+    selector = f"text='{title}'"
+    page.wait_for_selector(selector)
+    assert page.is_visible(selector)
+    selector = f"text='{content}'"
+    page.wait_for_selector(selector)
+    assert page.is_visible(selector)
+
+    # edit cell
+    page.locator('button[aria-label="Edit cell"]').click()
     edited_content = "Edited content."
-    edit_content_textarea = page.locator('textarea[name="content"]')
+    edit_content_textarea = page.locator('textarea[data-test-id="cellEditFormTextArea"]')
     edit_content_textarea.fill("")
     edit_content_textarea.type(edited_content)
     page.get_by_role("button", name="Save changes").click()

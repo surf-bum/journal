@@ -18,14 +18,11 @@
                 <div class="modal-body">
                     <form id="noteForm"
                           action="{{ url_for("ui.notes_ui.create_note") }}"
+                          autocomplete="off"
                           method="POST">
                         <div class="form-group">
                             <label for="exampleFormControlInput1">Title</label>
                             <input class="form-control" name="title" type="text" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Content</label>
-                            <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
                         </div>
                     </form>
                 </div>
