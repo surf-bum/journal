@@ -11,4 +11,6 @@ RUN pip install -r requirements.txt
 
 COPY app ./app
 
+WORKDIR /opt/journal/app
+
 CMD ["python", "manage.py", "gunicorn"]
