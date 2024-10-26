@@ -53,3 +53,40 @@ async def get_plugin(plugin_id):
 async def list_plugins():
     plugins = await PluginManager.get_plugins()
     return render_template("plugins/list.html", plugins=plugins)
+
+
+@api_plugins_blueprint.route("/<uuid:plugin_id>", methods=["DELETE"])
+async def delete_plugin(plugin_id):
+    plugin = await PluginManager.delete_plugin(plugin_id)
+    if not plugin:
+        return {"error": {"message": "Detail not found."}}
+
+    storage.delete_file(plugin.path)
+
+    return "", 204
+
+
+@api_plugins_blueprint.route("/<uuid:plugin_id>/content", methods=["GET"])
+async def get_plugin_content(plugin_id):
+    plugin = await PluginManager.get_plugin(plugin_id)
+    if not plugin:
+        return {"error": {"message": "Detail not found."}}
+
+    content = storage.retrieve_file(plugin.path)
+    content = content.read().decode()
+
+    return {"content": content or ""}
+
+
+@api_plugins_blueprint.route("/<uuid:plugin_id>/content", methods=["PATCH"])
+async def update_plugin_content(plugin_id):
+    payload = request.get_json()
+    content = payload.get("content", "")
+
+    plugin = await PluginManager.get_plugin(plugin_id)
+    if not plugin:
+        return {"error": {"message": "Detail not found."}}
+
+    content = storage.store_file(content, plugin.path)
+
+    return "", 204

@@ -13,20 +13,56 @@
     <li class="breadcrumb-item" aria-current="page">{{ plugin.name }}</li>
 {% endblock %}
 {% block content %}
-    <div>
-        <p>
-            <h2>{{ plugin.name }}</h2>
-        </p>
+    <div class="align-items-center d-flex">
+        <div>
+            <p>
+                <h2>{{ plugin.name }}</h2>
+            </p>
+        </div>
+        <div>
+            <button id="pluginEdit" class="btn btn-primary btn-sm">Edit</button>
+            <button id="pluginDelete" class="btn btn-danger btn-sm">Delete</button>
+        </div>
     </div>
-    <div id="editor" style="height: 70vh; width: 100%">
-        function foo(items) {
-        var x = "All this is syntax highlighted";
-        return x;
-        }
-    </div>
+    <div id="editor" style="height: 60vh; width: 100%"></div>
     <script>
         const aceEditor = ace.edit("editor");
-        aceEditor.session.setMode("ace/mode/javascript");
+        aceEditor.session.setMode("ace/mode/html");
         aceEditor.setTheme("ace/theme/twilight");
+        const pluginDeleteButton = document.getElementById("pluginDelete");
+        const pluginEditButton = document.getElementById("pluginEdit");
+
+        pluginDeleteButton.onclick = () => {
+            fetch("{{ url_for('api.plugins_api.delete_plugin', plugin_id=plugin.id) }}", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .then(response => {
+                    window.location.href = "/ui/plugins"
+                })
+        }
+        pluginEditButton.onclick = () => {
+            fetch("{{ url_for('api.plugins_api.update_plugin_content', plugin_id=plugin.id) }}", {
+                body: JSON.stringify({
+                    content: aceEditor.getValue()
+                }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "PATCH"
+            }, (response) => response.json())
+        }
+
+
+        fetch("{{ url_for('api.plugins_api.get_plugin_content', plugin_id=plugin.id) }}")
+            .then((response) => response.json())
+            .then(response => {
+                aceEditor.getSession().setValue(response["content"]);
+            })
     </script>
 {% endblock %}

@@ -44,32 +44,29 @@
         </div>
     </div>
     <script>
-    function embedReferenceKey(e){
-        const key= e.currentTarget.dataset.referenceKey;
-        fetch(`/api/v1/references/embed/${encodeURIComponent(key)}`, 
-        {  
-            body: JSON.stringify({}),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }, 
-            method: "post"
+        function embedReferenceKey(e) {
+            const key = e.currentTarget.dataset.referenceKey;
+            fetch(`/api/v1/references/embed/${encodeURIComponent(key)}`, {
+                body: JSON.stringify({}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "post"
+            }).then(() => location.reload())
         }
-        ).then(()=>location.reload())
-    }
 
-    function unEmbedReferenceKey(e){
-        const key= e.currentTarget.dataset.referenceKey;
-        fetch(`/api/v1/references/unembed/${encodeURIComponent(key)}`, 
-        {  
-            body: JSON.stringify({}),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }, 
-            method: "post"
-        }).then(()=>location.reload())
-        
-    }
+        function unEmbedReferenceKey(e) {
+            const key = e.currentTarget.dataset.referenceKey;
+            fetch(`/api/v1/references/unembed/${encodeURIComponent(key)}`, {
+                body: JSON.stringify({}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "post"
+            }).then(() => location.reload())
+
+        }
     </script>
 {% endblock %}

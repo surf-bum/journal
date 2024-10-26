@@ -16,83 +16,90 @@
         </form>
     </div>
     <script>
-    const messagesContainerElement = document.getElementById("messages");
-    const formElement = document.getElementById("promptForm");
+        const messagesContainerElement = document.getElementById("messages");
+        const formElement = document.getElementById("promptForm");
 
-    function addMessageElement(){
-        const messageContainerElement = document.createElement("div");
-        messageContainerElement.setAttribute("class", "card gap-2 mb-2 p-2");
-        
-        const messageParagraphElement = document.createElement("p");
-        messageParagraphElement.setAttribute("class", "mb-0");
-        messageParagraphElement.innerText = "...";
+        function addMessageElement() {
+            const messageContainerElement = document.createElement("div");
+            messageContainerElement.setAttribute("class", "card gap-2 mb-2 p-2");
 
-        messageContainerElement.appendChild(messageParagraphElement);
-        messagesContainerElement.appendChild(messageContainerElement);
+            const messageParagraphElement = document.createElement("p");
+            messageParagraphElement.setAttribute("class", "mb-0");
+            messageParagraphElement.innerText = "...";
 
-        return messageParagraphElement;
-    }
+            messageContainerElement.appendChild(messageParagraphElement);
+            messagesContainerElement.appendChild(messageContainerElement);
 
-    formElement.onsubmit = (e)=>{
-        e.preventDefault();
+            return messageParagraphElement;
+        }
 
-        const formData = new FormData(formElement);
-        const prompt = formData.get("prompt");
+        formElement.onsubmit = (e) => {
+            e.preventDefault();
 
-        let messageParagraphElement = addMessageElement();
-        const promptInput = document.getElementById("promptInput");
-        messageParagraphElement.innerHTML = prompt;
-        promptInput.value = ""
-        
-        messageParagraphElement = addMessageElement();
-        fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/query", {
-                body: JSON.stringify({"prompt": formData.get("prompt")}),
+            const formData = new FormData(formElement);
+            const prompt = formData.get("prompt");
+
+            let messageParagraphElement = addMessageElement();
+            const promptInput = document.getElementById("promptInput");
+            messageParagraphElement.innerHTML = prompt;
+            promptInput.value = ""
+
+            messageParagraphElement = addMessageElement();
+            fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/query", {
+                body: JSON.stringify({
+                    "prompt": formData.get("prompt")
+                }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                }, 
-                method: "post" }
-            ).then(response => {
-    
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            let markdownResponse = ""
+                },
+                method: "post"
+            }).then(response => {
 
-            function read() {
-                return reader.read().then(({ done, value }) => {
-                    if (done) {
-                        console.log("Stream complete");
-                        return;
-                    }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let markdownResponse = ""
 
-                    let chunk = decoder.decode(value, { stream: true });
-                    const messages = chunk.split("\n");
-                    let buffer = ""
-                    messages.forEach(_message=>{
-                        if(!_message.trim()){
+                function read() {
+                    return reader.read().then(({
+                        done,
+                        value
+                    }) => {
+                        if (done) {
+                            console.log("Stream complete");
                             return;
                         }
 
-                        try{
-                            const message = JSON.parse(_message);
-                            markdownResponse += message["response"];
-                            messageParagraphElement.innerHTML = marked.parse(markdownResponse);
-                            buffer = ""
-                        }catch(e){
-                            buffer += _message
-                        }
-                    })
+                        let chunk = decoder.decode(value, {
+                            stream: true
+                        });
+                        const messages = chunk.split("\n");
+                        let buffer = ""
+                        messages.forEach(_message => {
+                            if (!_message.trim()) {
+                                return;
+                            }
 
-                    return read();
-                });
-            }
+                            try {
+                                const message = JSON.parse(_message);
+                                markdownResponse += message["response"];
+                                messageParagraphElement.innerHTML = marked.parse(markdownResponse);
+                                buffer = ""
+                            } catch (e) {
+                                buffer += _message
+                            }
+                        })
 
-            return read();
-        }).catch(error => {
-            console.error("Error fetching and receiving data:", error);
-            messageParagraphElement.innerHTML = "Error."
-        });
-        messageParagraphElement.innerText
-    }   
+                        return read();
+                    });
+                }
+
+                return read();
+            }).catch(error => {
+                console.error("Error fetching and receiving data:", error);
+                messageParagraphElement.innerHTML = "Error."
+            });
+            messageParagraphElement.innerText
+        }
     </script>
 {% endblock %}

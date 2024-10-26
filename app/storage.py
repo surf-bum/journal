@@ -16,19 +16,21 @@ def delete_file(key: str):
         s3_client.delete_object(Bucket=bucket_name, Key=key)
     except ClientError as e:
         logger.error(e)
- 
+
 
 def store_file(file, key: str) -> None:
+    logger.debug("store_file %s %s", file, key)
     try:
         s3_client.put_object(Bucket=bucket_name, Key=key, Body=file)
     except ClientError as e:
         logger.error(e)
 
+
 def retrieve_file(key: str):
+    logger.debug("retrieve_file %s", key)
     try:
         reference = s3_client.get_object(Bucket=bucket_name, Key=key)
         file_stream = reference["Body"]
-        logger.debug("file_stream %s", file_stream)
         return file_stream
     except ClientError as e:
         logger.error(e)
