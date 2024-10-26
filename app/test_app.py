@@ -5,7 +5,7 @@ import uuid
 import pytest
 from playwright.sync_api import Page
 
-from utils import setup_logger
+from app.utils import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -29,7 +29,7 @@ def app():
     from app.serve import flask_app
 
     flask_app.config["TESTING"] = True
-    
+
     yield flask_app
 
 

@@ -37,5 +37,5 @@ jobs:
       - name: Tests
         run: |
           playwright install chromium
-          python manage.py migrate
           pytest -vvv
+        working-directory: app

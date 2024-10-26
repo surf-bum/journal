@@ -1,4 +1,5 @@
 import json
+import tempfile
 import uuid
 
 from flask import (
@@ -12,7 +13,7 @@ from flask import (
 )
 from datetime import datetime
 
-from utils import setup_logger
+from app.utils import setup_logger
 from .models import Note
 
 logger = setup_logger(__name__)
@@ -92,12 +93,13 @@ async def backup_restore_notes():
             notes = Note.all()
 
             deserialized_notes = [note.model_dump_json() for note in notes]
-            backup_file_name = "notes.json"
-            with open(backup_file_name, "w") as json_file:
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as json_file:
                 deserialized_notes = [json.loads(_note) for _note in deserialized_notes]
                 json.dump(deserialized_notes, json_file)
 
-            return send_file(backup_file_name, as_attachment=True)
+            return send_file(
+                json_file.name, as_attachment=True, download_name="notes.json"
+            )
 
         elif "restore" in request.form:
             file = request.files["file"]
