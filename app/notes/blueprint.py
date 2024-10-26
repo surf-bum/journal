@@ -42,6 +42,28 @@ async def get_note(note_id):
 
 
 @ui_notes_blueprint.route(
+    "/notes/<uuid:note_id>/cells", methods=["POST"]
+)
+async def create_cell(note_id):
+    title = request.form["title"]
+    content = request.form["content"]
+
+    note = await NoteManager.get_note(note_id)
+
+    cell = CellSerializer(
+        id=uuid.uuid4(),
+        content=json.dumps({"body": content}),
+        created_at=datetime.now(),
+        note=note.id,
+        plugin="markdown",
+        title = title,
+        updated_at=datetime.now(),
+    )
+    cell = await NoteManager.create_cell(cell)
+
+    return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
+
+@ui_notes_blueprint.route(
     "/notes/<uuid:note_id>/cells/<uuid:cell_id>/update", methods=["POST"]
 )
 async def update_cell(cell_id, note_id):
@@ -59,31 +81,20 @@ async def update_cell(cell_id, note_id):
 @ui_notes_blueprint.route("/create", methods=["POST"])
 async def create_note():
     title = request.form["title"]
-    content = request.form["content"]
 
-    if title and content:
-        new_note = NoteSerializer(
+    if title:
+        note = NoteSerializer(
             id=uuid.uuid4(),
             created_at=datetime.now(),
             title=title,
             updated_at=datetime.now(),
         )
-        new_cell = CellSerializer(
-            id=uuid.uuid4(),
-            content=json.dumps({"body": content}),
-            created_at=datetime.now(),
-            note=new_note.id,
-            title=title,
-            updated_at=datetime.now(),
-            plugin="markdown",
-        )
-        new_note = await NoteManager.create_note(new_note, [new_cell])
-        print(new_note)
-        flash(f"Note '{new_note.title}' created successfully!")
+        note = await NoteManager.create_note(note)
+        flash(f"Note '{note.title}' created successfully!")
     else:
-        flash("Please provide both title and content!")
+        flash("Please provide title!")
 
-    return redirect(url_for("ui.notes_ui.index"))
+    return redirect(url_for("ui.notes_ui.get_note", note_id=note.id))
 
 
 @ui_notes_blueprint.route(

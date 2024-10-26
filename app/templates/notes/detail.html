@@ -7,14 +7,105 @@
 {% endblock %}
 {% block content %}
     {% include "notes/partials/notes/viewer.html" %}
+    <div>
+        <button class="btn btn-primary btn-sm mb-2"
+                data-bs-toggle="modal"
+                data-bs-target="#createCellModal">Create cell</button>
+    </div>
+    <div class="modal fade"
+         id="createCellModal"
+         tabindex="-1"
+         aria-labelledby="cellModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="noteModalLabel">Create a new cell</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCellForm"
+                          action="{{ url_for('ui.notes_ui.create_cell', note_id=note.id) }}"
+                          method="POST">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Title</label>
+                            <input class="form-control" name="title" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Content</label>
+                            <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="createCellForm" class="btn btn-primary btn-sm">Create cell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script defer>
+        document.execCommand('defaultParagraphSeparator', false, 'p');
+
+        function resizeTextArea(textArea) {
+            const parent = textArea.parentElement;
+            const availableHeight = parent.clientHeight;
+            const lineHeight = parseInt(window.getComputedStyle(textArea).getPropertyValue('line-height'));
+            const rows = Math.floor(availableHeight / lineHeight)
+            textArea.rows = rows - 1;
+        }
+
+        function renderMarkdown(markdown) {
+            return marked.parse(markdown);
+        }
+
+        const setUpCellContent = (cellId) => {
+            const cellEditForm = document.getElementById(`cellEditForm-${cellId}`);
+            const editEditor = document.getElementById(`editEditor-${cellId}`);
+            const noteContentTextArea = document.getElementById(`cellEditFormTextArea-${cellId}`);
+            const cellEditButton = document.getElementById(`cellEditButton-${cellId}`);
+            const cellViewerContainer = document.getElementById(`cellViewerContainer-${cellId}`);
+
+            fetch(`/api/v1/notes/{{ note.id }}/cells/${cellId}/content`)
+                .then(response => response.json())
+                // TODO: Plugin system should just pass content into the plugin
+                .then(response => response["content"]["body"])
+                .then(_content => {
+                    content = _content;
+                    const renderedMarkdown = renderMarkdown(content);
+                    const renderedMarkdownElement = document.getElementById(`cellViewer-${cellId}`);
+                    renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
+                }).catch(error => {
+                    throw new Error(error);
+                });
+
+            cellEditButton.onclick = function() {
+                cellViewerContainer.style.display = 'none';
+                cellEditForm.style.display = 'block';
+
+                resizeTextArea(noteContentTextArea);
+                noteContentTextArea.value = content;
+                noteContentTextArea.focus();
+            };
+        }
+    </script>
     {% for cell in cells %}
         <div>
             <div class="h-100" id="cellViewerContainer-{{ cell.id }}">
                 <div class="d-flex flex-column h-100 gap-2">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
-                        <p class="h4 text-truncate">{{ cell.title }}</p>
+                        <h4 class="text-truncate">{{ cell.title }}</h4>
                         <div>
-                            <button id="cellEditButton-{{ cell.id }}" class="btn btn-primary btn-sm">Edit cell</button>
+                            <button aria-label="Edit cell"
+                                    id="cellEditButton-{{ cell.id }}"
+                                    class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
                             <a class="btn btn-danger btn-sm"
                                href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
                         </div>
@@ -38,6 +129,7 @@
                 <div class="form-group h-100">
                     <label for="cellEditFormTextArea-{{ cell.id }}">Content</label>
                     <textarea class="form-control"
+                              data-test-id="cellEditFormTextArea"
                               name="content"
                               id="cellEditFormTextArea-{{ cell.id }}"
                               value="{{ cell.content }}"
@@ -46,57 +138,14 @@
                 </div>
                 <div class="mt-3">
                     <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-                    <a class="btn btn-danger btn-sm"
-                       href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-alarm"></i>Delete</a>
+                    <a aria-label="Delete cell"
+                       class="btn btn-danger btn-sm"
+                       href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
                     <a class="btn btn-secondary btn-sm"
                        href="{{ url_for('ui.notes_ui.get_note', note_id=note.id) }}">Cancel</a>
                 </div>
             </form>
         </div>
-        <script>
-            const cellEditForm = document.getElementById('cellEditForm-{{ cell.id }}');
-            const editEditor = document.getElementById('editEditor-{{ cell.id }}');
-            const noteContentTextArea = document.getElementById('cellEditFormTextArea-{{ cell.id }}');
-            const cellEditButton = document.getElementById('cellEditButton-{{ cell.id }}');
-            const cellViewerContainer = document.getElementById('cellViewerContainer-{{ cell.id }}');
-
-            let cellContent = "";
-            fetch("/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content")
-                .then(response => response.json())
-                // TODO: Plugin system should just pass content into the plugin
-                .then(response => response["content"]["body"])
-                .then(_content => {
-                    content = _content;
-                    const renderedMarkdown = renderMarkdown(content);
-                    const renderedMarkdownElement = document.getElementById('cellViewer-{{ cell.id }}');
-                    renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
-                }).catch(error => {
-                    throw new Error(error);
-                });
-
-            cellEditButton.onclick = function() {
-                cellViewerContainer.style.display = 'none';
-                cellEditForm.style.display = 'block';
-
-                resizeTextArea(noteContentTextArea);
-                noteContentTextArea.value = content;
-                noteContentTextArea.focus();
-            };
-        </script>
+        <script>setUpCellContent("{{ cell.id }}")</script>
     {% endfor %}
-    <script>
-        document.execCommand('defaultParagraphSeparator', false, 'p');
-
-        function resizeTextArea(textArea) {
-            const parent = textArea.parentElement;
-            const availableHeight = parent.clientHeight;
-            const lineHeight = parseInt(window.getComputedStyle(textArea).getPropertyValue('line-height'));
-            const rows = Math.floor(availableHeight / lineHeight)
-            textArea.rows = rows - 1;
-        }
-
-        function renderMarkdown(markdown) {
-            return marked.parse(markdown);
-        }
-    </script>
 {% endblock %}

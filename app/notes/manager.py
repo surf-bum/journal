@@ -1,4 +1,4 @@
-from app.notes.tables import Cell, Note, NoteSerializer
+from app.notes.tables import Cell, CellSerializer, Note, NoteSerializer
 from app.utils import setup_logger
 from piccolo.query.functions.aggregate import Count
 
@@ -11,15 +11,22 @@ class NoteManager:
         return await Note.select(Count())
 
     @classmethod
-    async def create_note(cls, note, cells):
+    async def create_note(cls, note):
         note = await Note.insert(
             Note(**note.dict()),
-        ).returning(Note.title)
+        ).returning(Note.id, Note.title)
         note = note[0]
 
-        await Cell.insert(*[Cell(**cell.dict()) for cell in cells])
-
         return NoteSerializer(**note)
+    
+    @classmethod
+    async def create_cell(cls, cell):
+        note = await Cell.insert(
+            Cell(**cell.dict()),
+        ).returning(Cell.title)
+        note = note[0]
+
+        return CellSerializer(**note)
 
     @classmethod
     async def delete_cell(cls, cell_id) -> None:
