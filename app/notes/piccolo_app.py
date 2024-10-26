@@ -1,7 +1,7 @@
 import os
 
+from notes.tables import Cell, Note
 from piccolo.conf.apps import AppConfig
-from .tables import Cell, Note
 
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))

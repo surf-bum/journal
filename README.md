@@ -37,4 +37,18 @@ Only Postgres or derivant are supported. Default value is `postgres://postgres:p
     PW_DEBUG=1 pytest
 
 
+### Data layer
+
+#### Make migrations
+
     piccolo migrations new notes --auto --desc="Adding name column"
+
+
+#### Forward migrations
+
+    piccolo migrations forwards all
+
+
+#### Troubleshoot
+
+    piccolo --diagnose

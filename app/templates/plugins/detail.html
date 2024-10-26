@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block head %}
+    {{ super() }}
+    <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/ace.js"></script>
+    <script src=" //cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/theme-twilight.min.js "></script>
+    <link href="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/css/ace.min.css "
+          rel="stylesheet">
+{% endblock %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item" aria-current="page">
+        <a href="{{ url_for("ui.plugins_ui.list_plugins") }}">Plugins</a>
+    </li>
+    <li class="breadcrumb-item" aria-current="page">{{ plugin.name }}</li>
+{% endblock %}
+{% block content %}
+    <div>
+        <p>
+            <h2>{{ plugin.name }}</h2>
+        </p>
+    </div>
+    <div id="editor" style="height: 70vh; width: 100%">
+        function foo(items) {
+        var x = "All this is syntax highlighted";
+        return x;
+        }
+    </div>
+    <script>
+        const aceEditor = ace.edit("editor");
+        aceEditor.session.setMode("ace/mode/javascript");
+        aceEditor.setTheme("ace/theme/twilight");
+    </script>
+{% endblock %}
