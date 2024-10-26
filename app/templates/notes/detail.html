@@ -59,22 +59,22 @@
             const noteContentTextArea = document.getElementById('cellEditFormTextArea-{{ cell.id }}');
             const cellEditButton = document.getElementById('cellEditButton-{{ cell.id }}');
             const cellViewerContainer = document.getElementById('cellViewerContainer-{{ cell.id }}');
-            
+
             let cellContent = "";
             fetch("/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content")
-            .then(response=>response.json())
-            // TODO: Plugin system should just pass content into the plugin
-            .then(response=>response["content"]["body"])
-            .then(_content=>{
-                content = _content;
-                const renderedMarkdown = renderMarkdown(content);
-                const renderedMarkdownElement = document.getElementById('cellViewer-{{ cell.id }}');
-                renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
-            }).catch(error=>{
-                throw new Error(error);   
-            });
-            
-            cellEditButton.onclick = function () {
+                .then(response => response.json())
+                // TODO: Plugin system should just pass content into the plugin
+                .then(response => response["content"]["body"])
+                .then(_content => {
+                    content = _content;
+                    const renderedMarkdown = renderMarkdown(content);
+                    const renderedMarkdownElement = document.getElementById('cellViewer-{{ cell.id }}');
+                    renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
+                }).catch(error => {
+                    throw new Error(error);
+                });
+
+            cellEditButton.onclick = function() {
                 cellViewerContainer.style.display = 'none';
                 cellEditForm.style.display = 'block';
 
@@ -94,7 +94,7 @@
             const rows = Math.floor(availableHeight / lineHeight)
             textArea.rows = rows - 1;
         }
-    
+
         function renderMarkdown(markdown) {
             return marked.parse(markdown);
         }

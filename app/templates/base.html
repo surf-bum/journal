@@ -21,18 +21,21 @@
                 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
                 <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
                 <script defer>
-                hljs.highlightAll();
+                    hljs.highlightAll();
 
-                const { markedHighlight } = globalThis.markedHighlight;
-                marked.use(
-                    markedHighlight({
-                        langPrefix: 'hljs language-',
-                        highlight(code, lang) {
-                            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                            return hljs.highlight(code, { language }).value;
-                        }
-                    }
-                ))
+                    const {
+                        markedHighlight
+                    } = globalThis.markedHighlight;
+                    marked.use(
+                        markedHighlight({
+                            langPrefix: 'hljs language-',
+                            highlight(code, lang) {
+                                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                                return hljs.highlight(code, {
+                                    language
+                                }).value;
+                            }
+                        }))
                 </script>
             {% endblock %}
         </head>
@@ -53,7 +56,7 @@
                         <div class="collapse navbar-collapse" id="navbarText">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for("ui.notes_ui.index") }}">Notes</a>
+                                    <a class="nav-link" href="{{ url_for("ui.notes_ui.index") }}"><i class="bi bi-journal"></i> Notes</a>
                                 </li>
                                 <li class="nav-item">
                                     <a aria-label="Assistants"
@@ -61,7 +64,10 @@
                                        href="{{ url_for("ui.assistants_ui.list_assistants") }}"><i class="bi bi-robot"></i>&nbsp;Assistants</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for("ui.references_ui.index") }}">References</a>
+                                    <a class="nav-link" href="{{ url_for("ui.references_ui.index") }}"><i class="bi bi-archive"></i> References</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for("ui.references_ui.index") }}"><i class="bi bi-archive"> </i>Media</i></a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url_for("ui.plugins_ui.list_plugins") }}"><i class="bi bi-plugin"></i> Plugins</a>
@@ -127,9 +133,9 @@
             <script src="//cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
             <script src="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
             <script>
-    const editor = document.getElementById('editor');
-    const contentInput = document.getElementById('content');
-    const noteForm = document.getElementById('noteForm');
+                const editor = document.getElementById('editor');
+                const contentInput = document.getElementById('content');
+                const noteForm = document.getElementById('noteForm');
             </script>
         </body>
     </html>

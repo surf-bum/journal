@@ -8,7 +8,7 @@ from app.assistants.blueprint import (
     ui_assistants_blueprint,
 )
 from app.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
-from app.plugins.blueprint import ui_plugins_blueprint
+from app.plugins.blueprint import api_plugins_blueprint, ui_plugins_blueprint
 from app.references.blueprint import (
     api_references_blueprint,
     ui_references_blueprint,
@@ -27,6 +27,7 @@ flask_app.secret_key = settings.SECRET_KEY
 api_blueprint = Blueprint("api", __name__)
 api_blueprint.register_blueprint(api_assistants_blueprint, url_prefix="/assistants")
 api_blueprint.register_blueprint(api_notes_blueprint, url_prefix="/notes")
+api_blueprint.register_blueprint(api_plugins_blueprint, url_prefix="/plugins")
 api_blueprint.register_blueprint(api_references_blueprint, url_prefix="/references")
 
 ui_blueprint = Blueprint("ui", __name__)

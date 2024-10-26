@@ -10,7 +10,11 @@ class PluginManager:
         plugin = plugin[0]
 
         return PluginSerializer(**plugin)
-    
+
+    @classmethod
+    async def delete_plugin(cls, plugin_id) -> None:
+        await Plugin.delete().where(Plugin.id == plugin_id)
+
     @classmethod
     async def get_plugin(cls, plugin_id) -> Plugin:
         return await Plugin.objects().get(Plugin.id == plugin_id)
