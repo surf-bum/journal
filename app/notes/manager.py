@@ -50,3 +50,9 @@ class NoteManager:
         return await Cell.update(
             title=partial_cell.title, content=partial_cell.content
         ).where(Cell.id == partial_cell.id)
+    
+    @classmethod
+    async def update_note(cls, partial_note) -> list:
+        return await Note.update(
+            title=partial_note.title
+        ).where(Note.id == partial_note.id)

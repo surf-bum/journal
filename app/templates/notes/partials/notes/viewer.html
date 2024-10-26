@@ -1,0 +1,18 @@
+<div class="d-flex flex-column gap-2"
+     hx-target="this"
+     hx-swap="outerHTML"
+     id="noteViewer">
+    <div class="d-flex flex-wrap justify-content-between align-items-center">
+        <p class="h2 text-truncate">{{ note.title }}</p>
+        <div>
+            <button aria-label="Edit note"
+                    class="btn btn-primary btn-sm"
+                    hx-get="{{ url_for('ui.notes_ui.partial_note_editor', note_id=note.id) }}"
+                    id="editNoteButton">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <a class="btn btn-danger btn-sm"
+               href="{{ url_for('ui.notes_ui.delete_note', note_id=note.id) }}"><i class="bi-trash"></i></a>
+        </div>
+    </div>
+</div>
