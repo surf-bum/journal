@@ -155,17 +155,20 @@ async def backup_restore_notes():
     notes = await NoteManager.get_notes()
     return render_template("notes/backup_restore.html", notes=notes)
 
+
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/editor")
 async def partial_note_editor(note_id):
     note = await NoteManager.get_note(note_id)
-    
+
     return render_template("notes/partials/notes/editor.html", note=note)
+
 
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/viewer")
 async def partial_note_viewer(note_id):
     note = await NoteManager.get_note(note_id)
-    
+
     return render_template("notes/partials/notes/viewer.html", note=note)
+
 
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/update", methods=["POST"])
 async def partial_note_update(note_id):
@@ -177,6 +180,7 @@ async def partial_note_update(note_id):
     await NoteManager.update_note(note)
 
     return redirect(url_for("ui.notes_ui.partial_note_viewer", note_id=note.id))
+
 
 @api_notes_blueprint.route(
     "/<uuid:note_id>/cells/<uuid:cell_id>/content", methods=["GET"]

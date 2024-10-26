@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Journal</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="data:image/svg+xml,
-            <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
-                <text y=%22.9em%22 font-size=%2290%22>🪶</text>
-            </svg>
-            ">
-            <link href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/spacelab/bootstrap.min.css"
-                  rel="stylesheet">
-            <link rel="stylesheet"
-                  href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-            <link rel="stylesheet"
-                  href="//cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <script src="//unpkg.com/htmx.org@2.0.3"></script>
-            <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-            <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
-            <script defer>
+        {% block head %}
+            <title>Journal</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="icon" href="data:image/svg+xml,
+                <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
+                    <text y=%22.9em%22 font-size=%2290%22>🪶</text>
+                </svg>
+                ">
+                <link href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/spacelab/bootstrap.min.css"
+                      rel="stylesheet">
+                <link rel="stylesheet"
+                      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+                <link rel="stylesheet"
+                      href="//cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+                <script src="//unpkg.com/htmx.org@2.0.3"></script>
+                <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+                <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
+                <script defer>
                 hljs.highlightAll();
 
                 const { markedHighlight } = globalThis.markedHighlight;
@@ -32,7 +33,8 @@
                         }
                     }
                 ))
-            </script>
+                </script>
+            {% endblock %}
         </head>
         <body class="d-flex flex-column vh-100">
             <header>
@@ -54,25 +56,19 @@
                                     <a class="nav-link" href="{{ url_for("ui.notes_ui.index") }}">Notes</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"
-                                       href="{{ url_for("ui.assistants_ui.list_assistants") }}">Assistants</a>
+                                    <a aria-label="Assistants"
+                                       class="nav-link"
+                                       href="{{ url_for("ui.assistants_ui.list_assistants") }}"><i class="bi bi-robot"></i>&nbsp;Assistants</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url_for("ui.references_ui.index") }}">References</a>
                                 </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle"
-                                       href="#"
-                                       id="notesDropdown"
-                                       role="button"
-                                       data-bs-toggle="dropdown"
-                                       aria-expanded="false">Profile</a>
-                                    <ul class="dropdown-menu" aria-labelledby="notesDropdown">
-                                        <li>
-                                            <a class="dropdown-item"
-                                               href="{{ url_for("ui.notes_ui.backup_restore_notes") }}">Backup and restore</a>
-                                        </li>
-                                    </ul>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for("ui.plugins_ui.list_plugins") }}"><i class="bi bi-plugin"></i> Plugins</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       href="{{ url_for("ui.notes_ui.backup_restore_notes") }}">Backup and restore</a>
                                 </li>
                             </ul>
                         </div>

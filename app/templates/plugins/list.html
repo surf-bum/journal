@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block breadcrumbs %}<li class="breadcrumb-item" aria-current="page">Plugins</li>{% endblock %}
+{% block content %}
+    <div class="modal fade"
+         id="pluginModal"
+         tabindex="-1"
+         aria-labelledby="pluginModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pluginModalLabel">Create a new plugin</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="pluginForm"
+                          action="{{ url_for("ui.plugins_ui.create_plugin") }}"
+                          method="POST">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Name</label>
+                            <input class="form-control" name="name" type="text" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="pluginForm" class="btn btn-primary btn-sm">Create plugin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button"
+            class="btn btn-primary btn-sm mb-2 text-nowrap"
+            data-bs-toggle="modal"
+            data-bs-target="#pluginModal">Create plugin</button>
+    <div class="row row-cols-1 row-cols-md-3 g-2">
+        {% for plugin in plugins %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">{{ plugin.name }}</h5>
+                        <p class="card-text font-monospace mb-0 text-secondary">{{ plugin.updated_at.strftime("%Y-%m-%d %H:%M:%S %Z") }}</p>
+                        <a class="stretched-link"
+                           data-plugin-name="{{ plugin.name }}"
+                           href="{{ url_for('ui.plugins_ui.get_plugin', plugin_id=plugin.id) }}"></a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No plugins found.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

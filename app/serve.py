@@ -8,6 +8,7 @@ from app.assistants.blueprint import (
     ui_assistants_blueprint,
 )
 from app.notes.blueprint import api_notes_blueprint, ui_notes_blueprint
+from app.plugins.blueprint import ui_plugins_blueprint
 from app.references.blueprint import (
     api_references_blueprint,
     ui_references_blueprint,
@@ -31,6 +32,7 @@ api_blueprint.register_blueprint(api_references_blueprint, url_prefix="/referenc
 ui_blueprint = Blueprint("ui", __name__)
 ui_blueprint.register_blueprint(ui_assistants_blueprint, url_prefix="/assistants")
 ui_blueprint.register_blueprint(ui_notes_blueprint, url_prefix="/notes")
+ui_blueprint.register_blueprint(ui_plugins_blueprint, url_prefix="/plugins")
 ui_blueprint.register_blueprint(ui_references_blueprint, url_prefix="/references")
 
 
