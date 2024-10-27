@@ -1,3 +1,5 @@
+from datetime import datetime
+import uuid
 from app.notes.tables import Cell, CellSerializer, Note, NoteSerializer
 from app.utils import setup_logger
 from piccolo.query.functions.aggregate import Count
@@ -12,10 +14,11 @@ class NoteManager:
 
     @classmethod
     async def create_note(cls, note):
-        note = await Note.insert(
-            Note(**note.dict()),
-        ).returning(Note.id, Note.title)
-        note = note[0]
+        now = datetime.now()
+        notes = await Note.insert(
+            Note(**note.model_dump(), created_at=now, id=uuid.uuid4(), updated_at=now),
+        ).returning(Note.created_at, Note.id, Note.title, Note.updated_at)
+        note = notes[0]
 
         return NoteSerializer(**note)
     

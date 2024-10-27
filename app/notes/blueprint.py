@@ -2,6 +2,8 @@ import json
 import tempfile
 import uuid
 
+from pydantic import ValidationError
+
 from app.notes.manager import NoteManager
 from flask import (
     Blueprint,
@@ -14,6 +16,7 @@ from flask import (
 )
 from datetime import datetime
 
+from app.notes.serializers import CreateNote, PatchNote
 from app.utils import setup_logger
 from .tables import CellSerializer, NoteSerializer
 
@@ -77,19 +80,17 @@ async def update_cell(cell_id, note_id):
 
     return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
 
-
 @ui_notes_blueprint.route("/create", methods=["POST"])
 async def create_note():
     title = request.form["title"]
 
-    if title:
-        note = NoteSerializer(
-            id=uuid.uuid4(),
-            created_at=datetime.now(),
-            title=title,
-            updated_at=datetime.now(),
-        )
-        note = await NoteManager.create_note(note)
+    try:
+        serialized_note = CreateNote.model_validate({"title": title})
+    except ValidationError as e:
+        logger.error(e)
+        return {"error": {"message": str(e)}}, 400
+
+    if note := await NoteManager.create_note(serialized_note):
         flash(f"Note '{note.title}' created successfully!")
     else:
         flash("Please provide title!")
@@ -205,6 +206,56 @@ async def partial_note_update(note_id):
     await NoteManager.update_note(note)
 
     return redirect(url_for("ui.notes_ui.partial_note_viewer", note_id=note.id))
+
+@api_notes_blueprint.route(
+    "/<uuid:note_id>", methods=["DELETE"]
+)
+async def delete_api_note(note_id):
+    if _ := await NoteManager.get_note(note_id):
+        await NoteManager.delete_note(note_id)
+    else:
+        "", 404
+
+    return "", 204
+
+@api_notes_blueprint.route(
+    "/<uuid:note_id>", methods=["GET"]
+)
+async def get_api_note(note_id):
+    if _ := await NoteManager.get_note(note_id):
+        return {}
+    else:
+        return {"error": {"message": "Object not found"}}, 404
+    
+@api_notes_blueprint.route(
+    "/<uuid:note_id>", methods=["PATCH"]
+)
+async def patch_note(note_id):
+    try:
+        serialized_note = PatchNote.model_validate(request.json)
+    except ValidationError as e:
+        logger.error(e)
+        return {"error": {"message": str(e)}}, 400
+    
+    if _ := await NoteManager.get_note(note_id):
+        NoteManager.update_note(serialized_note)
+        return serialized_note.model_dump()
+    else:
+        return {"error": {"message": "Object not found"}}, 404
+
+@api_notes_blueprint.route(
+    "/", methods=["POST"]
+)
+async def post_note():
+    try:
+        serialized_note = CreateNote.model_validate(request.json)
+    except ValidationError as e:
+        logger.error(e)
+        return {"error": {"message": str(e)}}, 400
+
+    note = await NoteManager.create_note(serialized_note)
+
+    return note.model_dump(), 201
 
 
 @api_notes_blueprint.route(
