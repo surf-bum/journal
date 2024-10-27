@@ -1,3 +1,4 @@
+<div>{% include "notes/partials/cells/shared/rank.html" %}</div>
 <div id="cellEditorContainer-{{ cell.id }}">
     <form id="cellEditForm-{{ cell.id }}"
           action="{{ url_for('ui.notes_ui.update_cell', cell_id=cell.id, note_id=note.id) }}"

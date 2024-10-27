@@ -81,7 +81,5 @@
             };
         }
     </script>
-    {% for cell in cells %}
-        <div id="cellContainer-{{ cell.id }}">{% include "notes/partials/cells/viewer.html" %}</div>
-    {% endfor %}
+    <div id="cells">{% include "notes/partials/cells/cells.html" %}</div>
 {% endblock %}

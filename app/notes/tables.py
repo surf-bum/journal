@@ -1,5 +1,5 @@
 from piccolo.table import Table
-from piccolo.columns import ForeignKey, JSONB, Timestamp, Varchar, UUID
+from piccolo.columns import ForeignKey, Integer, JSONB, Timestamp, Varchar, UUID
 from piccolo.utils.pydantic import create_pydantic_model
 
 
@@ -19,6 +19,7 @@ class Cell(BaseTable):
     title = Varchar(length=255)
     plugin = Varchar(length=255)
     content = JSONB()
+    position = Integer()
 
 
 NoteSerializer = create_pydantic_model(Note)

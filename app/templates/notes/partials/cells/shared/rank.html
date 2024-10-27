@@ -1,0 +1,21 @@
+<div class="btn-group" role="group">
+    <button class="btn btn-primary btn-sm"
+            hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
+            hx-swap="innerHTML"
+            hx-target="#cells"
+            hx-vals='{"position": 1}'
+            id="movePositionUpButton-{{ cell.id }}"
+            type="button">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+    <button class="btn btn-primary btn-sm"
+            hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
+            hx-swap="innerHTML"
+            hx-target="#cells"
+            hx-vals='{"position": -1 }'
+            id="movePositionDownButton-{{ cell.id }}"
+            type="button">
+        <i class="bi bi-arrow-down"></i>
+    </button>
+</div>
+<small>({{ cell.position }})</small>
