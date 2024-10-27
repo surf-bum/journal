@@ -166,6 +166,20 @@ async def backup_restore_notes():
     notes = await NoteManager.get_notes()
     return render_template("notes/backup_restore.html", notes=notes)
 
+@ui_notes_blueprint.route("/partials/<uuid:note_id>/editor/cells/<uuid:cell_id>")
+async def partial_cell_editor(cell_id, note_id):
+    cell = await NoteManager.get_cell(cell_id)
+    note = await NoteManager.get_note(note_id)
+
+    return render_template("notes/partials/cells/editor.html", cell=cell, note=note)
+
+@ui_notes_blueprint.route("/partials/<uuid:note_id>/viewer/cells/<uuid:cell_id>")
+async def partial_cell_viewer(cell_id, note_id):
+    cell = await NoteManager.get_cell(cell_id)
+    note = await NoteManager.get_note(note_id)
+
+    return render_template("notes/partials/cells/viewer.html", cell=cell, note=note)
+
 
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/editor")
 async def partial_note_editor(note_id):

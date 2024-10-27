@@ -107,7 +107,7 @@ def test_create_and_read_note_and_cell(page: Page):
     # edit cell
     page.locator('button[aria-label="Edit cell"]').click()
     edited_content = "Edited content."
-    edit_content_textarea = page.locator('textarea[data-test-id="cellEditFormTextArea"]')
+    edit_content_textarea = page.locator('textarea[data-test-id="cellEditFormContentTextArea"]')
     edit_content_textarea.fill("")
     edit_content_textarea.type(edited_content)
     page.get_by_role("button", name="Save changes").click()
