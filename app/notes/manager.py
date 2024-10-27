@@ -49,16 +49,16 @@ class NoteManager:
 
     @classmethod
     async def get_cells(cls, note_id) -> list:
-        return await Cell.objects().where(Cell.note == note_id)
+        return await Cell.objects().where(Cell.note == note_id).order_by(Cell.position)
 
     @classmethod
     async def get_notes(cls) -> list:
-        return await Note.select()
+        return await Note.select().order_by(Note.updated_at)
 
     @classmethod
     async def update_cell(cls, partial_cell) -> list:
         return await Cell.update(
-            title=partial_cell.title, content=partial_cell.content
+            title=partial_cell.title, content=partial_cell.content,position=partial_cell.position
         ).where(Cell.id == partial_cell.id)
 
     @classmethod

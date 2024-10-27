@@ -6,6 +6,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h4 class="text-truncate">{{ cell.title }}</h4>
             <div>
+                {% include "notes/partials/cells/shared/rank.html" %}
                 <button aria-label="Edit cell"
                         class="btn btn-primary btn-sm"
                         hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"

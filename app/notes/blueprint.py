@@ -59,12 +59,14 @@ async def create_cell(note_id):
         created_at=datetime.now(),
         note=note.id,
         plugin="markdown",
+        position=0,
         title = title,
         updated_at=datetime.now(),
     )
     cell = await NoteManager.create_cell(cell)
 
     return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
+
 
 @ui_notes_blueprint.route(
     "/notes/<uuid:note_id>/cells/<uuid:cell_id>/update", methods=["POST"]
@@ -173,6 +175,21 @@ async def partial_cell_editor(cell_id, note_id):
     note = await NoteManager.get_note(note_id)
 
     return render_template("notes/partials/cells/editor.html", cell=cell, note=note)
+
+@ui_notes_blueprint.route(
+    "/partials/<uuid:note_id>/cells/<uuid:cell_id>/position", methods=["POST"]
+)
+async def partial_cell_position(cell_id, note_id):
+    position = int(request.form["position"])
+
+    cell = await NoteManager.get_cell(cell_id)
+    cell.position += position
+    await NoteManager.update_cell(cell)
+
+    cells = await NoteManager.get_cells(note_id)
+    note = await NoteManager.get_note(note_id)
+
+    return render_template("notes/partials/cells/cells.html", cells=cells, note=note)
 
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/viewer/cells/<uuid:cell_id>")
 async def partial_cell_viewer(cell_id, note_id):
