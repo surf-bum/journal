@@ -49,7 +49,7 @@ class NoteManager:
 
     @classmethod
     async def get_cells(cls, note_id) -> list:
-        return await Cell.objects().where(Cell.note == note_id).order_by(Cell.position)
+        return await Cell.objects().where(Cell.note == note_id).order_by(Cell.position, ascending=False)
 
     @classmethod
     async def get_notes(cls) -> list:
