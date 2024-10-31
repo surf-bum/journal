@@ -1,5 +1,7 @@
 from datetime import datetime
 import uuid
+
+from  slugify import slugify
 from app import storage
 from app.plugins.manager import PluginManager
 from app.utils import setup_logger
@@ -25,7 +27,8 @@ async def create_plugin():
     name = request.form["name"]
 
     if name:
-        path = f"plugins/{uuid.uuid4()}/{name}.html"
+        slugified_name = slugify(name)
+        path = f"plugins/{uuid.uuid4()}/{slugified_name}/index.html"
         storage.store_file("", path)
         new_plugin = PluginSerializer(
             id=uuid.uuid4(),
