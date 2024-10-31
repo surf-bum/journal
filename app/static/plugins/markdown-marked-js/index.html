@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
+        <script defer>
+            function renderMarkdown(markdown) {
+                return marked.parse(markdown);
+            }
+
+            hljs.highlightAll();
+
+            const {
+                markedHighlight
+            } = globalThis.markedHighlight;
+            marked.use(
+                markedHighlight({
+                    langPrefix: 'hljs language-',
+                    highlight(code, lang) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, {
+                            language
+                        }).value;
+                    }
+                }))
+        </script>
+    </head>
+    <body>
+        <div>
+            <button id="viewButton">View</button>
+            <button id="editButton">Edit</button>
+        </div>
+        <div id="editor">
+            <textarea id="editorTextArea" style="width: 100%;" rows="9">
+            </textarea>
+        </div>
+        <div id="viewer"></div>
+        <script defer>
+            let body = "";
+            const editButtonElement = document.getElementById("editButton");
+            const viewButtonElement = document.getElementById("viewButton");
+            const editorDivElement = document.getElementById("editor");
+            editorDivElement.setAttribute("style", "display: none;");
+            const editorTextAreaElement = document.getElementById("editorTextArea");
+            const viewerDivElement = document.getElementById("viewer");
+
+            function updateEditor(body) {
+                editorTextAreaElement.value = body;
+            }
+
+            function updateViewer(body) {
+                viewerDivElement.innerHTML = renderMarkdown(body);
+            }
+
+            editButtonElement.onclick = () => {
+                editorDivElement.setAttribute("style", "display: inherit;");
+                viewerDivElement.setAttribute("style", "display: none;");
+                updateEditor(body);
+            }
+            editorTextAreaElement.oninput = (e) => {
+                body = e.target.value;
+                window.parent.postMessage({
+                    cellId,
+                    "content": {
+                        body
+                    },
+                    "source": "cell",
+                    "type": "data"
+                })
+            }
+            viewButtonElement.onclick = () => {
+                editorDivElement.setAttribute("style", "display: none;");
+                viewerDivElement.setAttribute("style", "display: inherit;");
+                updateViewer(body);
+            }
+
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            const cellId = urlSearchParams.get("cellId");
+
+            function handleMessage(event) {
+                if (event.data.source === "cell") {
+                    return;
+                }
+
+                if (event.data.cellId !== cellId) {
+                    return;
+                }
+
+                body = event.data.content.body
+                updateEditor(body);
+                updateViewer(body);
+            }
+
+            console.log("Init cellId", cellId);
+            window.addEventListener('message', handleMessage, false);
+            window.parent.postMessage({
+                cellId,
+                "source": "cell",
+                "type": "init"
+            })
+        </script>
+    </body>
+</html>

@@ -55,7 +55,7 @@ async def create_cell(note_id):
 
     cell = CellSerializer(
         id=uuid.uuid4(),
-        content=json.dumps({"body": content}),
+        content=content,
         created_at=datetime.now(),
         note=note.id,
         plugin="markdown",
@@ -77,7 +77,7 @@ async def update_cell(cell_id, note_id):
 
     cell = await NoteManager.get_cell(cell_id)
     cell.title = title
-    cell.content = json.dumps({"body": content})
+    cell.content = content
     await NoteManager.update_cell(cell)
 
     return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))

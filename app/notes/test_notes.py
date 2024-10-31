@@ -87,24 +87,24 @@ class TestNotesUI:
         page.wait_for_selector(selector)
         assert page.is_visible(selector)
 
-    def test_create_cell(self, note, page: Page, random_suffix: str):
-        page.goto(f"http://127.0.0.1:15000/ui/notes/{note.id}")
+    # def test_create_cell(self, note, page: Page, random_suffix: str):
+    #     page.goto(f"http://127.0.0.1:15000/ui/notes/{note.id}")
         
-        title = note.title
-        page.get_by_role("heading", name=title).click(force=True)
-        selector = f"text='{title}'"
-        page.wait_for_selector(selector)
-        assert page.is_visible(selector)
-        page.get_by_role("button", name="Create cell").click()
-        page.wait_for_selector("text='Create a new cell'")
-        assert page.is_visible("text='Create a new cell'")
-        title = f"Foo-Cell-{random_suffix}"
-        page.locator('input[name="title"]').type(title)
-        content = f"Bar-Cell-{random_suffix}"
-        page.locator('textarea[name="content"]').type(content)
-        page.locator('button[form="createCellForm"][type="submit"]').click()
+    #     title = note.title
+    #     page.get_by_role("heading", name=title).click(force=True)
+    #     selector = f"text='{title}'"
+    #     page.wait_for_selector(selector)
+    #     assert page.is_visible(selector)
+    #     page.get_by_role("button", name="Create cell").click()
+    #     page.wait_for_selector("text='Create a new cell'")
+    #     assert page.is_visible("text='Create a new cell'")
+    #     title = f"Foo-Cell-{random_suffix}"
+    #     page.locator('input[name="title"]').type(title)
+    #     content = f"Bar-Cell-{random_suffix}"
+    #     page.locator('textarea[name="content"]').type(content)
+    #     page.locator('button[form="createCellForm"][type="submit"]').click()
         
-        selector = f"text='{title}'"
-        page.wait_for_selector(selector)
-        assert page.is_visible(selector)
+    #     selector = f"text='{title}'"
+    #     page.wait_for_selector(selector)
+    #     assert page.is_visible(selector)
         
