@@ -27,16 +27,22 @@
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="createCellForm"
+                    <form class="d-flex flex-column gap-2"
+                          id="createCellForm"
                           action="{{ url_for('ui.notes_ui.create_cell', note_id=note.id) }}"
                           method="POST">
                         <div class="form-group">
                             <label for="title">Title</label>
-                            <input class="form-control" name="title" type="text" required>
+                            <input class="form-control" name="title" type="text" required />
                         </div>
+                        <input id="createCellFormContentInput" name="content" type="hidden" />
                         <div class="form-group">
-                            <label for="content">Content</label>
-                            <textarea class="form-control" name="content" id="content" rows="9" required></textarea>
+                            <label for="cellPluginIframe-new">Content</label>
+                            <iframe class="border"
+                                    id="cellPluginIframe-new"
+                                    src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown-marked-js', cellId='new') }}"
+                                    style="height: 240px;
+                                           width: 100%"></iframe>
                         </div>
                         <div class="form-group">
                             <label for="plugin">Plugin</label>
@@ -56,36 +62,25 @@
         </div>
     </div>
     <script defer>
-        document.execCommand('defaultParagraphSeparator', false, 'p');
+        const createCellFormContentInputElement = document.getElementById("createCellFormContentInput");
 
-        function resizeTextArea(textArea) {
-            const parent = textArea.parentElement;
-            const availableHeight = parent.clientHeight;
-            const lineHeight = parseInt(window.getComputedStyle(textArea).getPropertyValue('line-height'));
-            const rows = Math.floor(availableHeight / lineHeight)
-            textArea.rows = rows - 1;
+        function handleMessage(event) {
+            if (event.data.source !== "cell") {
+                return;
+            }
+
+            if (event.data.cellId !== "new") {
+                return;
+            }
+
+            if (event.data.type !== "data") {
+                return;
+            }
+
+            createCellFormContentInputElement.value = JSON.stringify(event.data.content);
         }
 
-        function renderMarkdown(markdown) {
-            return marked.parse(markdown);
-        }
-
-        const setUpCellContent = (cellId) => {
-            const cellEditForm = document.getElementById(`cellEditForm-${cellId}`);
-            const cellEditFormContentTextArea = document.getElementById(`cellEditFormContentTextArea-${cellId}`);
-            const cellEditButton = document.getElementById(`cellEditButton-${cellId}`);
-            const cellViewerContainer = document.getElementById(`cellViewerContainer-${cellId}`);
-
-            cellEditButton.onclick = function() {
-                console.log("cellEditButton", cellId)
-                cellViewerContainer.style.display = 'none';
-                cellEditForm.style.display = 'block';
-
-                resizeTextArea(cellEditFormContentTextArea);
-                cellEditFormContentTextArea.value = content;
-                cellEditFormContentTextArea.focus();
-            };
-        }
+        window.addEventListener('message', handleMessage, false);
     </script>
     <div id="cells">{% include "notes/partials/cells/cells.html" %}</div>
 {% endblock %}

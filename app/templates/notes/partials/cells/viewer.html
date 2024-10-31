@@ -1,9 +1,8 @@
-<div class="h-100"
-     id="cellViewerContainer-{{ cell.id }}"
-     hx-target="this"
-     hx-swap="outerHTML">
+<div class="h-100" id="cellViewerContainer-{{ cell.id }}">
     <div class="d-flex flex-column h-100 gap-2">
-        <div class="d-flex flex-wrap justify-content-between align-items-center">
+        <div class="d-flex flex-wrap justify-content-between align-items-center"
+             hx-target="this"
+             hx-swap="outerHTML">
             <h4 class="text-truncate">{{ cell.title }}</h4>
             <div>
                 {% include "notes/partials/cells/shared/rank.html" %}
@@ -17,20 +16,53 @@
                    href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
             </div>
         </div>
-        <div id="cellViewer-{{ cell.id }}" class="border h-100 overflow-auto p-2"></div>
+        <input form="cellEditForm-{{ cell.id }}"
+               id="cellEditFormContentInput-{{ cell.id }}"
+               name="content"
+               type="hidden"
+               value="{{ cell.content }}"
+               required />
+        <iframe class="border"
+                id="cellPluginIframe-{{ cell.id }}"
+                src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown-marked-js', cellId=cell.id) }}"
+                style="height: 240px"></iframe>
     </div>
 </div>
 <script>
-    fetch(`/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content`)
-        .then(response => response.json())
-        // TODO: Plugin system should just pass content into the plugin
-        .then(response => response["content"]["body"])
-        .then(_content => {
-            content = _content;
-            const renderedMarkdown = renderMarkdown(content);
-            const renderedMarkdownElement = document.getElementById(`cellViewer-{{ cell.id }}`);
-            renderedMarkdownElement.innerHTML = renderMarkdown(renderedMarkdown);
-        }).catch(error => {
-            throw new Error(error);
-        });
+    function handleMessage(event) {
+        const cellId = "{{ cell.id }}";
+        const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`)
+        const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`)
+
+        if (event.data.source !== "cell") {
+            return;
+        }
+
+        if (event.data.cellId !== cellId) {
+            return;
+        }
+
+        if (event.data.type == "init") {
+            fetch(`/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content`)
+                .then(response => response.json())
+                .then(response => {
+                    const content = response["content"];
+                    const message = {
+                        cellId,
+                        content,
+                        source: "host"
+                    };
+                    cellPluginIframe.contentWindow.postMessage(message);
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
+        }
+
+        if (event.data.type == "data") {
+            cellEditFormContentInput.value = JSON.stringify(event.data.content);
+        }
+    }
+
+    window.addEventListener('message', handleMessage, false);
 </script>

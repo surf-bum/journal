@@ -12,6 +12,7 @@ from flask import (
     render_template,
     flash,
     redirect,
+    send_file,
     url_for,
     request,
 )
@@ -50,6 +51,10 @@ async def create_plugin():
 async def get_plugin(plugin_id):
     plugin = await PluginManager.get_plugin(plugin_id)
     return render_template("plugins/detail.html", plugin=plugin)
+
+@ui_plugins_blueprint.route("/<string:plugin>/load")
+async def load_plugin(plugin: str):
+    return send_file("static/plugins/markdown-marked-js/index.html")
 
 
 @ui_plugins_blueprint.route("/")

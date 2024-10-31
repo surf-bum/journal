@@ -13,16 +13,6 @@
                    type="text"
                    required>
         </div>
-        <div class="form-group h-100">
-            <label for="cellEditFormContentTextArea-{{ cell.id }}">Content</label>
-            <textarea class="form-control"
-                      data-test-id="cellEditFormContentTextArea"
-                      name="content"
-                      id="cellEditFormContentTextArea-{{ cell.id }}"
-                      value="{{ cell.content }}"
-                      rows="9"
-                      required></textarea>
-        </div>
         <div class="mt-3">
             <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
             <a aria-label="Delete cell"
@@ -33,18 +23,3 @@
         </div>
     </form>
 </div>
-<script>
-    const cellEditFormContentTextArea = document.getElementById(`cellEditFormContentTextArea-{{ cell.id }}`);
-    fetch(`/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content`)
-        .then(response => response.json())
-        // TODO: Plugin system should just pass content into the plugin
-        .then(response => response["content"]["body"])
-        .then(_content => {
-            content = _content;
-            resizeTextArea(cellEditFormContentTextArea);
-            cellEditFormContentTextArea.value = content;
-            cellEditFormContentTextArea.focus();
-        }).catch(error => {
-            throw new Error(error);
-        });
-</script>

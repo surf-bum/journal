@@ -21,7 +21,7 @@ root_folder = Path(__file__).resolve().parent
 logger.debug("Adding %s to PYTHON_PATH", root_folder)
 sys.path.append(str(root_folder))
 
-flask_app = Flask(__name__)
+flask_app = Flask(__name__, static_folder='static')
 flask_app.secret_key = settings.SECRET_KEY
 
 api_blueprint = Blueprint("api", __name__)
