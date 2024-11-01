@@ -49,7 +49,7 @@ async def get_note(note_id):
 )
 async def create_cell(note_id):
     title = request.form["title"]
-    content = request.form["content"]
+    content = request.form["content"] or "{}"
 
     note = await NoteManager.get_note(note_id)
 
