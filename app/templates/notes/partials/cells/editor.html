@@ -1,24 +1,11 @@
-<div id="cellEditorContainer-{{ cell.id }}">
-    <form id="cellEditForm-{{ cell.id }}"
-          action="{{ url_for('ui.notes_ui.update_cell', cell_id=cell.id, note_id=note.id) }}"
-          method="POST"
-          class="h-75 mt-3">
-        <div class="form-group">
-            <label for="cellEditFormTitleInput-{{ cell.id }}">Title</label>
-            <input id="cellEditFormTitleInput-{{ cell.id }}"
-                   class="form-control"
-                   name="title"
-                   value="{{ cell.title }}"
-                   type="text"
-                   required>
-        </div>
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-            <a aria-label="Delete cell"
-               class="btn btn-danger btn-sm"
-               href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
-            <a class="btn btn-secondary btn-sm"
-               href="{{ url_for('ui.notes_ui.get_note', note_id=note.id) }}">Cancel</a>
-        </div>
-    </form>
+<div class="align-items-center d-flex gap-2 w-100">
+    <input id="cellEditFormTitleInput-{{ cell.id }}"
+           class="form-control"
+           form="cellEditForm-{{ cell.id }}"
+           name="title"
+           value="{{ cell.title }}"
+           type="text"
+           required>
+    <a class="btn btn-secondary btn-sm"
+       href="{{ url_for('ui.notes_ui.get_note', note_id=note.id) }}">Cancel</a>
 </div>

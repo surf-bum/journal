@@ -1,10 +1,23 @@
 <div class="h-100" id="cellViewerContainer-{{ cell.id }}">
     <div class="d-flex flex-column h-100 gap-2">
-        <div class="d-flex flex-wrap justify-content-between align-items-center"
-             hx-target="this"
-             hx-swap="outerHTML">
-            <h4 class="text-truncate">{{ cell.title }}</h4>
-            <div>
+        <form id="cellEditForm-{{ cell.id }}"
+              action="{{ url_for('ui.notes_ui.update_cell', cell_id=cell.id, note_id=note.id) }}"
+              method="POST">
+        </form>
+        <div class="align-items-center d-flex gap-2">
+            <h4 hx-target="this"
+                hx-swap="outerHTML"
+                class="py-1 text-truncate"
+                hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}">
+                <span>{{ cell.title }}</span>
+                <input id="cellEditFormTitleInput-{{ cell.id }}"
+                       class="form-control"
+                       form="cellEditForm-{{ cell.id }}"
+                       name="title"
+                       value="{{ cell.title }}"
+                       type="hidden">
+            </h4>
+            <div class="align-items-center d-flex gap-2">
                 <div class="btn-group" role="group">
                     <button class="btn btn-primary btn-sm"
                             hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
@@ -26,10 +39,14 @@
                     </button>
                 </div>
                 <small>({{ cell.position }})</small>
+            </div>
+            <div class="d-flex gap-2">
                 <button aria-label="Edit cell"
                         class="btn btn-primary btn-sm"
+                        form="cellEditForm-{{ cell.id }}"
                         hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
-                        id="cellEditButton-{{ cell.id }}">
+                        id="cellEditButton-{{ cell.id }}"
+                        type="submit">
                     <i class="bi bi-pencil-square"></i>
                 </button>
                 <a class="btn btn-danger btn-sm"
