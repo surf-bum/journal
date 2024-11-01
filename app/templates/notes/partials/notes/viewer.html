@@ -2,9 +2,9 @@
      hx-target="this"
      hx-swap="outerHTML"
      id="noteViewer">
-    <div class="d-flex flex-wrap justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center">
         <h2 class="text-truncate">{{ note.title }}</h2>
-        <div>
+        <div class="d-flex gap-2">
             <button aria-label="Edit note"
                     class="btn btn-primary btn-sm"
                     hx-get="{{ url_for('ui.notes_ui.partial_note_editor', note_id=note.id) }}"
