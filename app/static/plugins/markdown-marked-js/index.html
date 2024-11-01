@@ -8,15 +8,32 @@
               referrerpolicy="no-referrer" />
         <link rel="stylesheet"
               href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+        <link rel="stylesheet"
+              href="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
         <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
         <script defer>
+            const renderer = new marked.Renderer();
+            const linkRenderer = renderer.link;
+            renderer.link = (href, title, text) => {
+                const html = linkRenderer.call(renderer, href, title, text);
+                return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
+            };
+
             function renderMarkdown(markdown) {
-                return marked.parse(markdown);
+                return marked.parse(markdown, {
+                    renderer
+                });
             }
 
+            hljs.addPlugin(
+                new CopyButtonPlugin({
+                    autohide: false,
+                })
+            );
             hljs.highlightAll();
 
             const {
@@ -37,12 +54,12 @@
             .markdown-body {
                 box-sizing: border-box;
                 margin: 0 auto;
-                padding: 32px;
+                padding: 16px;
             }
 
             @media (max-width: 767px) {
                 .markdown-body {
-                    padding: 16px;
+                    padding: 8px;
                 }
             }
         </style>
