@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.7.0/github-markdown-light.css" />
+              href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.7.0/github-markdown-light.css" />
         <link rel="stylesheet"
               href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
         <link rel="stylesheet"
-              href="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+              href="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
+        <link href="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/css/ace.min.css "
+              rel="stylesheet">
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/ace.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.36.3/mode-markdown.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/theme-twilight.min.js "></script>
         <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-        <script src="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
+        <script src="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
         <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
         <script defer>
             const renderer = new marked.Renderer();
@@ -59,29 +64,44 @@
                     padding: 8px;
                 }
             }
+
+            #editor {
+                height: 90vh;
+                width: 100%;
+            }
+
+            #menu {
+                margin-bottom: 4px;
+                margin-top: 4px;
+            }
         </style>
     </head>
     <body>
-        <div>
+        <div id="menu">
             <button id="viewButton">View</button>
             <button id="editButton">Edit</button>
         </div>
-        <div id="editor">
-            <textarea id="editorTextArea" style="width: 100%;" rows="9">
-            </textarea>
-        </div>
+        <div id="editor"></div>
         <div class="markdown-body" id="viewer"></div>
         <script defer>
+            let aceEditor = null;
             let body = "";
             const editButtonElement = document.getElementById("editButton");
             const viewButtonElement = document.getElementById("viewButton");
             const editorDivElement = document.getElementById("editor");
             editorDivElement.setAttribute("style", "display: none;");
-            const editorTextAreaElement = document.getElementById("editorTextArea");
             const viewerDivElement = document.getElementById("viewer");
 
+            function setupAceEditor() {
+                if (aceEditor == null) {
+                    aceEditor = ace.edit("editor");
+                }
+                aceEditor.session.setMode("ace/mode/markdown");
+                aceEditor.setTheme("ace/theme/twilight");
+            }
+
             function updateEditor(body) {
-                editorTextAreaElement.value = body;
+                aceEditor.getSession().setValue(body);
             }
 
             function updateViewer(body) {
@@ -93,8 +113,10 @@
                 viewerDivElement.setAttribute("style", "display: none;");
                 updateEditor(body);
             }
-            editorTextAreaElement.oninput = (e) => {
-                body = e.target.value;
+            setupAceEditor();
+            aceEditor.on("input", function() {
+                body = aceEditor.getValue();
+
                 window.parent.postMessage({
                     cellId,
                     "content": {
@@ -103,7 +125,7 @@
                     "source": "cell",
                     "type": "data"
                 })
-            }
+            });
             viewButtonElement.onclick = () => {
                 editorDivElement.setAttribute("style", "display: none;");
                 viewerDivElement.setAttribute("style", "display: inherit;");
@@ -123,7 +145,6 @@
                 }
 
                 body = event.data?.content?.body ?? "";
-                updateEditor(body);
                 updateViewer(body);
             }
 
