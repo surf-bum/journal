@@ -61,14 +61,13 @@
                required />
         <iframe class="border"
                 id="cellPluginIframe-{{ cell.id }}"
-                src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown-marked-js', cellId=cell.id) }}"
+                src="{{ url_for('ui.plugins_ui.load_plugin', plugin=cell.plugin, cellId=cell.id) }}"
                 style="height: 50vh"></iframe>
     </div>
 </div>
 <script>
     function handleMessage(event) {
         const cellId = "{{ cell.id }}";
-        const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`)
         const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`)
 
         if (event.data.source !== "cell") {
@@ -89,6 +88,7 @@
                         content,
                         source: "host"
                     };
+                    const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`)
                     cellPluginIframe.contentWindow.postMessage(message);
                 })
                 .catch(error => {

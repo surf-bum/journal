@@ -33,21 +33,37 @@
                           method="POST">
                         <div class="form-group">
                             <label for="title">Title</label>
-                            <input class="form-control" name="title" type="text" required />
+                            <input autocomplete="off"
+                                   class="form-control"
+                                   name="title"
+                                   type="text"
+                                   required />
                         </div>
                         <input id="createCellFormContentInput" name="content" type="hidden" />
                         <div class="form-group">
                             <label for="cellPluginIframe-new">Content</label>
-                            <iframe class="border"
-                                    id="cellPluginIframe-new"
-                                    src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown-marked-js', cellId='new') }}"
-                                    style="height: 240px;
-                                           width: 100%"></iframe>
+                            <div id="cellPluginIframeWrapper-new">
+                                <iframe class="border"
+                                        id="cellPluginIframe-new"
+                                        hx-swap="outerHTML"
+                                        src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown', cellId='new') }}"
+                                        style="height: 240px;
+                                               width: 100%"></iframe>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="plugin">Plugin</label>
-                            <select aria-label="Select plugin" class="form-select" id="plugin" required>
-                                <option value="markdown">Markdown (marked.js)</option>
+                            <select aria-label="Select plugin"
+                                    class="form-select"
+                                    id="plugin"
+                                    hx-get="{{ url_for('ui.plugins_ui.partial_plugin_iframe', cellId='new') }}"
+                                    hx-include="[name='plugin']"
+                                    hx-target="#cellPluginIframeWrapper-new"
+                                    hx-trigger="change"
+                                    name="plugin"
+                                    required>
+                                <option value="markdown" selected>Markdown</option>
+                                <option value="plantuml">PlantUML</option>
                             </select>
                         </div>
                     </form>
@@ -61,6 +77,14 @@
             </div>
         </div>
     </div>
+    <script defer>
+        const modalElement = document.getElementById('createCellModal');
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            const form = document.getElementById('createCellForm');
+            console.log("Resetting form.")
+            form.reset();
+        });
+    </script>
     <script defer>
         const createCellFormContentInputElement = document.getElementById("createCellFormContentInput");
 

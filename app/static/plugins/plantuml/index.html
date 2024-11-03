@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/css/ace.min.css "
+              rel="stylesheet">
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/ace.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.36.3/mode-markdown.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/theme-twilight.min.js "></script>
+        <script src="./rawdeflate.js"></script>
+        <script>
+            $ = function(id) {
+                return document.getElementById(id)
+            };
+
+            function encode64(data) {
+                r = "";
+                for (i = 0; i < data.length; i += 3) {
+                    if (i + 2 == data.length) {
+                        r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0);
+                    } else if (i + 1 == data.length) {
+                        r += append3bytes(data.charCodeAt(i), 0, 0);
+                    } else {
+                        r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1),
+                            data.charCodeAt(i + 2));
+                    }
+                }
+                return r;
+            }
+
+            function append3bytes(b1, b2, b3) {
+                c1 = b1 >> 2;
+                c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+                c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
+                c4 = b3 & 0x3F;
+                r = "";
+                r += encode6bit(c1 & 0x3F);
+                r += encode6bit(c2 & 0x3F);
+                r += encode6bit(c3 & 0x3F);
+                r += encode6bit(c4 & 0x3F);
+                return r;
+            }
+
+            function encode6bit(b) {
+                if (b < 10) {
+                    return String.fromCharCode(48 + b);
+                }
+                b -= 10;
+                if (b < 26) {
+                    return String.fromCharCode(65 + b);
+                }
+                b -= 26;
+                if (b < 26) {
+                    return String.fromCharCode(97 + b);
+                }
+                b -= 26;
+                if (b == 0) {
+                    return '-';
+                }
+                if (b == 1) {
+                    return '_';
+                }
+                return '?';
+            }
+
+            var deflater = window.SharedWorker && new SharedWorker('rawdeflate.js');
+            if (deflater) {
+                deflater.port.addEventListener('message', done_deflating, false);
+                deflater.port.start();
+            } else if (window.Worker) {
+                deflater = new Worker('rawdeflate.js');
+                deflater.onmessage = done_deflating;
+            }
+
+            function compress(plantUmlString) {
+                plantUmlString = unescape(encodeURIComponent(plantUmlString));
+
+                if (deflater) {
+                    if (deflater.port && deflater.port.postMessage) {
+                        deflater.port.postMessage(plantUmlString);
+                    } else {
+                        deflater.postMessage(plantUmlString);
+                    }
+                } else {
+                    setTimeout(function() {
+                        done_deflating({
+                            data: deflate(plantUmlString)
+                        });
+                    }, 100);
+                }
+            }
+
+            function convertDeflatedDataToImgSrc(deflatedData) {
+                const base64EncodedData = encode64(deflatedData);
+                return `http://www.plantuml.com/plantuml/img/${base64EncodedData}`;
+            }
+
+            function done_deflating(e) {
+                const imgSrc = convertDeflatedDataToImgSrc(e.data);
+                viewerDivElement.src = imgSrc;
+            }
+
+            function compress(plantUmlSourceCode) {
+                plantUmlSourceCode = unescape(encodeURIComponent(plantUmlSourceCode));
+
+                if (deflater) {
+                    if (deflater.port && deflater.port.postMessage) {
+                        deflater.port.postMessage(plantUmlSourceCode);
+                    } else {
+                        deflater.postMessage(plantUmlSourceCode);
+                    }
+                } else {
+                    setTimeout(function() {
+                        done_deflating({
+                            data: deflate(plantUmlSourceCode)
+                        });
+                    }, 100);
+                }
+            }
+        </script>
+        <style>
+            img {
+                height: 75vh;
+            }
+
+            #editor {
+                height: 90vh;
+                width: 100%;
+            }
+
+            #menu {
+                margin-bottom: 4px;
+                margin-top: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="menu">
+            <button id="viewButton">View</button>
+            <button id="editButton">Edit</button>
+        </div>
+        <div>
+            <div id="editor"></div>
+            <img id="viewer" src="">
+        </div>
+        <p>plantuml</p>
+    </div>
+    <script>
+        let aceEditor = null;
+        let body = "";
+        const editButtonElement = document.getElementById("editButton");
+        const viewButtonElement = document.getElementById("viewButton");
+        const editorDivElement = document.getElementById("editor");
+        editorDivElement.setAttribute("style", "display: none;");
+        const viewerDivElement = document.getElementById("viewer");
+
+        function setupAceEditor() {
+            if (aceEditor == null) {
+                aceEditor = ace.edit("editor");
+            }
+            aceEditor.session.setMode("ace/mode/markdown");
+            aceEditor.setTheme("ace/theme/twilight");
+        }
+
+        function updateEditor(body) {
+            aceEditor.getSession().setValue(body);
+        }
+
+        function updateViewer(body) {
+            compress(body);
+        }
+
+        editButtonElement.onclick = () => {
+            editorDivElement.setAttribute("style", "display: inherit;");
+            viewerDivElement.setAttribute("style", "display: none;");
+            updateEditor(body);
+        }
+        setupAceEditor();
+        aceEditor.on("input", function() {
+            body = aceEditor.getValue();
+
+            window.parent.postMessage({
+                cellId,
+                "content": {
+                    body
+                },
+                "source": "cell",
+                "type": "data"
+            })
+        });
+        viewButtonElement.onclick = () => {
+            editorDivElement.setAttribute("style", "display: none;");
+            viewerDivElement.setAttribute("style", "display: inherit;");
+            updateViewer(body);
+        }
+
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const cellId = urlSearchParams.get("cellId");
+
+        function handleMessage(event) {
+            if (event.data.source === "cell") {
+                return;
+            }
+
+            if (event.data.cellId !== cellId) {
+                return;
+            }
+
+            body = event.data?.content?.body ?? "";
+            updateViewer(body);
+        }
+
+        console.log("Init cellId", cellId);
+        window.addEventListener('message', handleMessage, false);
+        window.parent.postMessage({
+            cellId,
+            "source": "cell",
+            "type": "init"
+        })
+    </script>
+</body>
+</html>

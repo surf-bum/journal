@@ -54,8 +54,17 @@ async def get_plugin(plugin_id):
 
 @ui_plugins_blueprint.route("/<string:plugin>/load")
 async def load_plugin(plugin: str):
-    return send_file("static/plugins/markdown-marked-js/index.html")
+    return send_file(f"static/plugins/{plugin}/index.html")
 
+@ui_plugins_blueprint.route("/partials/<string:cellId>/iframe")
+async def partial_plugin_iframe(cellId: str):
+    plugin = request.args.get("plugin")
+    logger.debug("Loading iframe for plugin '%s' in partial request.", plugin)
+    return render_template("plugins/partials/iframe.html", cell_id=cellId, plugin=plugin)
+
+@ui_plugins_blueprint.route("/<string:plugin>/<path>")
+async def load_plugin_path(plugin: str, path: str):
+    return send_file(f"static/plugins/{plugin}/{path}")
 
 @ui_plugins_blueprint.route("/")
 async def list_plugins():

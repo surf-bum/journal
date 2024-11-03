@@ -26,7 +26,7 @@ class NoteManager:
     async def create_cell(cls, cell):
         note = await Cell.insert(
             Cell(**cell.dict()),
-        ).returning(Cell.title)
+        ).returning(Cell.title, Cell.plugin)
         note = note[0]
 
         return CellSerializer(**note)

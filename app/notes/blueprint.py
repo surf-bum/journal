@@ -50,6 +50,7 @@ async def get_note(note_id):
 async def create_cell(note_id):
     title = request.form["title"]
     content = request.form["content"] or "{}"
+    plugin = request.form["plugin"]
 
     note = await NoteManager.get_note(note_id)
 
@@ -58,7 +59,7 @@ async def create_cell(note_id):
         content=content,
         created_at=datetime.now(),
         note=note.id,
-        plugin="markdown",
+        plugin=plugin,
         position=0,
         title = title,
         updated_at=datetime.now(),
