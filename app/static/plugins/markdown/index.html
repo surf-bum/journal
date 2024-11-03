@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet"
+              href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.7.0/github-markdown-light.css" />
+        <link rel="stylesheet"
+              href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+        <link rel="stylesheet"
+              href="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
+        <link href="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/css/ace.min.css "
+              rel="stylesheet">
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/ace.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.36.3/mode-markdown.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/ace-builds@1.36.3/src/theme-twilight.min.js "></script>
+        <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
+        <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
+        <script defer>
+            const renderer = new marked.Renderer();
+            const linkRenderer = renderer.link;
+            renderer.link = (href, title, text) => {
+                const html = linkRenderer.call(renderer, href, title, text);
+                return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
+            };
+
+            function renderMarkdown(markdown) {
+                return marked.parse(markdown, {
+                    renderer
+                });
+            }
+
+            hljs.addPlugin(
+                new CopyButtonPlugin({
+                    autohide: false,
+                })
+            );
+            hljs.highlightAll();
+
+            const {
+                markedHighlight
+            } = globalThis.markedHighlight;
+            marked.use(
+                markedHighlight({
+                    langPrefix: 'hljs language-',
+                    highlight(code, lang) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, {
+                            language
+                        }).value;
+                    }
+                }))
+        </script>
+        <style>
+            .markdown-body {
+                box-sizing: border-box;
+                margin: 0 auto;
+                padding: 16px;
+            }
+
+            @media (max-width: 767px) {
+                .markdown-body {
+                    padding: 8px;
+                }
+            }
+
+            #editor {
+                height: 90vh;
+                width: 100%;
+            }
+
+            #menu {
+                margin-bottom: 4px;
+                margin-top: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="menu">
+            <button id="viewButton">View</button>
+            <button id="editButton">Edit</button>
+        </div>
+        <div id="editor"></div>
+        <div class="markdown-body" id="viewer"></div>
+        <p>markdown</p>
+        <script defer>
+            let aceEditor = null;
+            let body = "";
+            const editButtonElement = document.getElementById("editButton");
+            const viewButtonElement = document.getElementById("viewButton");
+            const editorDivElement = document.getElementById("editor");
+            editorDivElement.setAttribute("style", "display: none;");
+            const viewerDivElement = document.getElementById("viewer");
+
+            function setupAceEditor() {
+                if (aceEditor == null) {
+                    aceEditor = ace.edit("editor");
+                }
+                aceEditor.session.setMode("ace/mode/markdown");
+                aceEditor.setTheme("ace/theme/twilight");
+            }
+
+            function updateEditor(body) {
+                aceEditor.getSession().setValue(body);
+            }
+
+            function updateViewer(body) {
+                viewerDivElement.innerHTML = renderMarkdown(body);
+            }
+
+            editButtonElement.onclick = () => {
+                editorDivElement.setAttribute("style", "display: inherit;");
+                viewerDivElement.setAttribute("style", "display: none;");
+                updateEditor(body);
+            }
+            setupAceEditor();
+            aceEditor.on("input", function() {
+                body = aceEditor.getValue();
+
+                window.parent.postMessage({
+                    cellId,
+                    "content": {
+                        body
+                    },
+                    "source": "cell",
+                    "type": "data"
+                })
+            });
+            viewButtonElement.onclick = () => {
+                editorDivElement.setAttribute("style", "display: none;");
+                viewerDivElement.setAttribute("style", "display: inherit;");
+                updateViewer(body);
+            }
+
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            const cellId = urlSearchParams.get("cellId");
+
+            function handleMessage(event) {
+                if (event.data.source === "cell") {
+                    return;
+                }
+
+                if (event.data.cellId !== cellId) {
+                    return;
+                }
+
+                body = event.data?.content?.body ?? "";
+                updateViewer(body);
+            }
+
+            console.log("Init cellId", cellId);
+            window.addEventListener('message', handleMessage, false);
+            window.parent.postMessage({
+                cellId,
+                "source": "cell",
+                "type": "init"
+            })
+        </script>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+<div class="align-items-center d-flex gap-2 w-100">
+    <input id="cellEditFormTitleInput-{{ cell.id }}"
+           class="form-control"
+           form="cellEditForm-{{ cell.id }}"
+           name="title"
+           value="{{ cell.title }}"
+           type="text"
+           required>
+    <a class="btn btn-secondary btn-sm"
+       href="{{ url_for('ui.notes_ui.get_note', note_id=note.id) }}">Cancel</a>
+</div>

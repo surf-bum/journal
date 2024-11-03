@@ -1,0 +1,42 @@
+name: "Quality Control"
+on:
+  pull_request:
+jobs:
+  "quality-control":
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/journal"
+    services:
+      postgres:
+        image: postgres:16.4
+        env:
+          POSTGRES_DB: journal
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.6'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      - name: Lint
+        run: |
+          djlint . --check
+          ruff check .
+      - name: Tests
+        run: |
+          playwright install chromium
+          piccolo migrations forwards all
+          pytest -vvv
+        working-directory: app

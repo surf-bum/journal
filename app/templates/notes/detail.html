@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block breadcrumbs %}
+    <li class="breadcrumb-item" aria-current="page">
+        <a href="{{ url_for("ui.notes_ui.index") }}">Notes</a>
+    </li>
+    <li class="breadcrumb-item" aria-current="page">{{ note.title }}</li>
+{% endblock %}
+{% block content %}
+    {% include "notes/partials/notes/viewer.html" %}
+    <div>
+        <button class="btn btn-primary btn-sm my-2"
+                data-bs-toggle="modal"
+                data-bs-target="#createCellModal">Create cell</button>
+    </div>
+    <div class="modal fade"
+         id="createCellModal"
+         tabindex="-1"
+         aria-labelledby="cellModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="noteModalLabel">Create a new cell</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="d-flex flex-column gap-2"
+                          id="createCellForm"
+                          action="{{ url_for('ui.notes_ui.create_cell', note_id=note.id) }}"
+                          method="POST">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input autocomplete="off"
+                                   class="form-control"
+                                   name="title"
+                                   type="text"
+                                   required />
+                        </div>
+                        <input id="createCellFormContentInput" name="content" type="hidden" />
+                        <div class="form-group">
+                            <label for="cellPluginIframe-new">Content</label>
+                            <div id="cellPluginIframeWrapper-new">
+                                <iframe class="border"
+                                        id="cellPluginIframe-new"
+                                        hx-swap="outerHTML"
+                                        src="{{ url_for('ui.plugins_ui.load_plugin', plugin='markdown', cellId='new') }}"
+                                        style="height: 240px;
+                                               width: 100%"></iframe>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="plugin">Plugin</label>
+                            <select aria-label="Select plugin"
+                                    class="form-select"
+                                    id="plugin"
+                                    hx-get="{{ url_for('ui.plugins_ui.partial_plugin_iframe', cellId='new') }}"
+                                    hx-include="[name='plugin']"
+                                    hx-target="#cellPluginIframeWrapper-new"
+                                    hx-trigger="change"
+                                    name="plugin"
+                                    required>
+                                <option value="markdown" selected>Markdown</option>
+                                <option value="plantuml">PlantUML</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="createCellForm" class="btn btn-primary btn-sm">Create cell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script defer>
+        const modalElement = document.getElementById('createCellModal');
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            const form = document.getElementById('createCellForm');
+            console.log("Resetting form.")
+            form.reset();
+        });
+    </script>
+    <script defer>
+        const createCellFormContentInputElement = document.getElementById("createCellFormContentInput");
+
+        function handleMessage(event) {
+            if (event.data.source !== "cell") {
+                return;
+            }
+
+            if (event.data.cellId !== "new") {
+                return;
+            }
+
+            if (event.data.type !== "data") {
+                return;
+            }
+
+            createCellFormContentInputElement.value = JSON.stringify(event.data.content);
+        }
+
+        window.addEventListener('message', handleMessage, false);
+    </script>
+    <div id="cells">{% include "notes/partials/cells/cells.html" %}</div>
+{% endblock %}

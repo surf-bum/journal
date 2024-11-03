@@ -1,0 +1,105 @@
+<div class="h-100" id="cellViewerContainer-{{ cell.id }}">
+    <div class="d-flex flex-column h-100 gap-2">
+        <form id="cellEditForm-{{ cell.id }}"
+              action="{{ url_for('ui.notes_ui.update_cell', cell_id=cell.id, note_id=note.id) }}"
+              method="POST">
+        </form>
+        <div class="align-items-center d-flex gap-2 justify-content-between">
+            <div hx-target="this" hx-swap="outerHTML">
+                <h4 class="py-1 text-truncate"
+                    hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}">
+                    <span>{{ cell.title }}</span>
+                    <input id="cellEditFormTitleInput-{{ cell.id }}"
+                           class="form-control"
+                           form="cellEditForm-{{ cell.id }}"
+                           name="title"
+                           value="{{ cell.title }}"
+                           type="hidden">
+                </h4>
+            </div>
+            <div class="align-items-center d-flex gap-2">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary btn-sm"
+                            hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
+                            hx-swap="innerHTML"
+                            hx-target="#cells"
+                            hx-vals='{"position": 1}'
+                            id="movePositionUpButton-{{ cell.id }}"
+                            type="button">
+                        <i class="bi bi-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-primary btn-sm"
+                            hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
+                            hx-swap="innerHTML"
+                            hx-target="#cells"
+                            hx-vals='{"position": -1 }'
+                            id="movePositionDownButton-{{ cell.id }}"
+                            type="button">
+                        <i class="bi bi-arrow-down"></i>
+                    </button>
+                </div>
+                <small>({{ cell.position }})</small>
+                <div class="d-flex gap-2">
+                    <button aria-label="Edit cell"
+                            class="btn btn-primary btn-sm"
+                            form="cellEditForm-{{ cell.id }}"
+                            hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
+                            id="cellEditButton-{{ cell.id }}"
+                            type="submit">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <a class="btn btn-danger btn-sm"
+                       href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
+                </div>
+            </div>
+        </div>
+        <input form="cellEditForm-{{ cell.id }}"
+               id="cellEditFormContentInput-{{ cell.id }}"
+               name="content"
+               type="hidden"
+               value="{{ cell.content }}"
+               required />
+        <iframe class="border"
+                id="cellPluginIframe-{{ cell.id }}"
+                src="{{ url_for('ui.plugins_ui.load_plugin', plugin=cell.plugin, cellId=cell.id) }}"
+                style="height: 50vh"></iframe>
+    </div>
+</div>
+<script>
+    function handleMessage(event) {
+        const cellId = "{{ cell.id }}";
+        const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`)
+
+        if (event.data.source !== "cell") {
+            return;
+        }
+
+        if (event.data.cellId !== cellId) {
+            return;
+        }
+
+        if (event.data.type == "init") {
+            fetch(`/api/v1/notes/{{ note.id }}/cells/{{ cell.id }}/content`)
+                .then(response => response.json())
+                .then(response => {
+                    const content = response["content"];
+                    const message = {
+                        cellId,
+                        content,
+                        source: "host"
+                    };
+                    const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`)
+                    cellPluginIframe.contentWindow.postMessage(message);
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
+        }
+
+        if (event.data.type == "data") {
+            cellEditFormContentInput.value = JSON.stringify(event.data.content);
+        }
+    }
+
+    window.addEventListener('message', handleMessage, false);
+</script>

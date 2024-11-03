@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="d-flex flex-column gap-2 h-100">
+        <div class="flex-grow-1" id="messages"></div>
+        <form id="contentForm" method="POST">
+            <div class="form-group">
+                <textarea autocomplete="off"
+                          class="form-control mb-2"
+                          id="contentInput"
+                          name="content"
+                          rows="4"
+                          type="text"
+                          required></textarea>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        const session = {
+            messages: []
+        }
+        const sessionMessages = session["messages"];
+
+        const messagesContainerElement = document.getElementById("messages");
+        const formElement = document.getElementById("contentForm");
+
+        function addMessageElement() {
+            const messageContainerElement = document.createElement("div");
+            messageContainerElement.setAttribute("class", "card gap-2 mb-2 p-2");
+
+            const messageParagraphElement = document.createElement("p");
+            messageParagraphElement.setAttribute("class", "mb-0");
+            messageParagraphElement.innerText = "...";
+
+            messageContainerElement.appendChild(messageParagraphElement);
+            messagesContainerElement.appendChild(messageContainerElement);
+
+            return messageParagraphElement;
+        }
+
+        formElement.onsubmit = (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(formElement);
+            const content = formData.get("content");
+
+            let messageParagraphElement = addMessageElement();
+            const contentInput = document.getElementById("contentInput");
+            messageParagraphElement.innerHTML = content;
+            contentInput.value = ""
+
+            session["messages"].push({
+                "role": "user",
+                "content": formData.get("content")
+            })
+            session["messages"].push({
+                "role": "assistant",
+                "content": ""
+            })
+
+            messageParagraphElement = addMessageElement();
+            fetch("/api/v1/assistants/fake-uuid/sessions/fake-uuid/chat", {
+                body: JSON.stringify(session),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "post"
+            }).then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let markdownResponse = ""
+
+                function read() {
+                    return reader.read().then(({
+                        done,
+                        value
+                    }) => {
+                        if (done) {
+                            console.log("Stream complete");
+                            return;
+                        }
+
+                        let bigChunk = decoder.decode(value, {
+                            stream: true
+                        });
+                        const messageChunks = bigChunk.split("\n");
+                        let buffer = ""
+                        messageChunks.forEach(messageChunk => {
+                            if (!messageChunk.trim()) {
+                                return;
+                            }
+
+                            try {
+                                const response = JSON.parse(messageChunk);
+                                markdownResponse += response["message"]["content"];
+                                messageParagraphElement.innerHTML = marked.parse(markdownResponse);
+                                buffer = ""
+                            } catch (e) {
+                                buffer += messageChunk
+                            }
+                        })
+
+                        session["messages"][session["messages"].length - 1]["content"] = markdownResponse
+
+                        return read();
+                    });
+                }
+
+                return read();
+            }).catch(error => {
+                console.error("Error fetching and receiving data:", error);
+            });
+
+        }
+    </script>
+{% endblock %}

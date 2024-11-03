@@ -1,0 +1,7 @@
+__pycache__/
+.idea/
+chromadb-data
+venv/
+
+.env
+journal.iml

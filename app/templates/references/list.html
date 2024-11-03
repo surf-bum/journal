@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block breadcrumbs %}<li class="breadcrumb-item" aria-current="page">References</li>{% endblock %}
+{% block content %}
+    <div class="d-flex flex-column gap-2">
+        <form action="{{ url_for("ui.references_ui.upload_reference") }}"
+              class="form-control form-control-sm"
+              method="POST"
+              enctype="multipart/form-data">
+            <input name="key" type="text" required>
+            <input type="file" name="file" accept=".txt" required>
+            <button class="btn btn-primary btn-sm" type="submit" name="restore">Upload reference</button>
+        </form>
+        <div class="row row-cols-1 row-cols-md-3 g-2">
+            {% for reference in references %}
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">{{ reference.key }}</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% if not reference.embedded %}
+                                    <a class="btn btn-primary btn-sm"
+                                       data-reference-key="{{ reference.encodedKey }}"
+                                       href="#"
+                                       onclick="embedReferenceKey(event)">Embed</a>
+                                {% else %}
+                                    <a class="btn btn-primary btn-sm"
+                                       data-reference-key="{{ reference.encodedKey }}"
+                                       href="#"
+                                       onclick="unEmbedReferenceKey(event)">Unembed</a>
+                                {% endif %}
+                                <a class="btn btn-primary btn-sm"
+                                   data-reference-key="{{ reference.key }}"
+                                   href="{{ url_for('ui.references_ui.download_reference', key=reference.encodedKey) }}">Download</a>
+                                <a class="btn btn-danger btn-sm"
+                                   data-reference-key="{{ reference.key }}"
+                                   href="{{ url_for('ui.references_ui.delete_reference', key=reference.encodedKey) }}">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>No references found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        function embedReferenceKey(e) {
+            const key = e.currentTarget.dataset.referenceKey;
+            fetch(`/api/v1/references/embed/${encodeURIComponent(key)}`, {
+                body: JSON.stringify({}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "post"
+            }).then(() => location.reload())
+        }
+
+        function unEmbedReferenceKey(e) {
+            const key = e.currentTarget.dataset.referenceKey;
+            fetch(`/api/v1/references/unembed/${encodeURIComponent(key)}`, {
+                body: JSON.stringify({}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "post"
+            }).then(() => location.reload())
+
+        }
+    </script>
+{% endblock %}
