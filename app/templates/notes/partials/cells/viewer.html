@@ -18,6 +18,7 @@
                 </h4>
             </div>
             <div class="align-items-center d-flex gap-2">
+                <small>({{ cell.position }})</small>
                 <div class="btn-group" role="group">
                     <button class="btn btn-primary btn-sm"
                             hx-post="{{ url_for('ui.notes_ui.partial_cell_position', cell_id=cell.id, note_id=note.id) }}"
@@ -37,9 +38,14 @@
                             type="button">
                         <i class="bi bi-arrow-down"></i>
                     </button>
-                </div>
-                <small>({{ cell.position }})</small>
-                <div class="d-flex gap-2">
+                    <button aria-label="View cell"
+                            class="btn btn-primary btn-sm"
+                            form="cellEditForm-{{ cell.id }}"
+                            hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
+                            id="cellEditButton-{{ cell.id }}"
+                            type="submit">
+                        <i class="bi bi-eye"></i>
+                    </button>
                     <button aria-label="Edit cell"
                             class="btn btn-primary btn-sm"
                             form="cellEditForm-{{ cell.id }}"
@@ -47,6 +53,14 @@
                             id="cellEditButton-{{ cell.id }}"
                             type="submit">
                         <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button aria-label="Save cell"
+                            class="btn btn-primary btn-sm"
+                            form="cellEditForm-{{ cell.id }}"
+                            hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
+                            id="cellEditButton-{{ cell.id }}"
+                            type="submit">
+                        <i class="bi bi-floppy"></i>
                     </button>
                     <a class="btn btn-danger btn-sm"
                        href="{{ url_for('ui.notes_ui.delete_cell', cell_id=cell.id, note_id=note.id) }}"><i class="bi-trash"></i></a>
@@ -68,7 +82,8 @@
 <script>
     function handleMessage(event) {
         const cellId = "{{ cell.id }}";
-        const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`)
+        const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`);
+        const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`);
 
         if (event.data.source !== "cell") {
             return;
@@ -86,9 +101,9 @@
                     const message = {
                         cellId,
                         content,
-                        source: "host"
+                        source: "host",
+                        type: "content"
                     };
-                    const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`)
                     cellPluginIframe.contentWindow.postMessage(message);
                 })
                 .catch(error => {
