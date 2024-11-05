@@ -218,19 +218,19 @@
             }
 
             switch (true) {
-                    case event.data.type === "content":
-                        body = event.data?.content?.body ?? "";
-                        updateViewer(body);
-                        break;
-                    case event.data.type === "edit":
-                        switchToEditMode();
-                        break;
-                    case event.data.type === "view":
-                        switchToViewMode();
-                        break;
-                    default:
-                        break;
-                }
+                case event.data.type === "content":
+                    body = event.data?.content?.body ?? "";
+                    updateViewer(body);
+                    break;
+                case event.data.type === "edit":
+                    switchToEditMode();
+                    break;
+                case event.data.type === "view":
+                    switchToViewMode();
+                    break;
+                default:
+                    break;
+            }
         }
 
         console.log("Init cellId", cellId);
