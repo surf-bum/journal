@@ -171,11 +171,26 @@
             compress(body);
         }
 
-        editButtonElement.onclick = () => {
+        function switchToEditMode() {
             editorDivElement.setAttribute("style", "display: inherit;");
             viewerDivElement.setAttribute("style", "display: none;");
             updateEditor(body);
         }
+
+        function switchToViewMode() {
+            editorDivElement.setAttribute("style", "display: none;");
+            viewerDivElement.setAttribute("style", "display: inherit;");
+            updateViewer(body);
+        }
+
+        editButtonElement.onclick = () => {
+            switchToEditMode();
+        }
+
+        viewButtonElement.onclick = () => {
+            switchToViewMode();
+        }
+
         setupAceEditor();
         aceEditor.on("input", function() {
             body = aceEditor.getValue();
@@ -189,11 +204,6 @@
                 "type": "data"
             })
         });
-        viewButtonElement.onclick = () => {
-            editorDivElement.setAttribute("style", "display: none;");
-            viewerDivElement.setAttribute("style", "display: inherit;");
-            updateViewer(body);
-        }
 
         const urlSearchParams = new URLSearchParams(window.location.search);
         const cellId = urlSearchParams.get("cellId");
@@ -207,8 +217,20 @@
                 return;
             }
 
-            body = event.data?.content?.body ?? "";
-            updateViewer(body);
+            switch (true) {
+                    case event.data.type === "content":
+                        body = event.data?.content?.body ?? "";
+                        updateViewer(body);
+                        break;
+                    case event.data.type === "edit":
+                        switchToEditMode();
+                        break;
+                    case event.data.type === "view":
+                        switchToViewMode();
+                        break;
+                    default:
+                        break;
+                }
         }
 
         console.log("Init cellId", cellId);

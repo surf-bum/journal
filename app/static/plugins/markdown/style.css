@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 main {
     flex-grow: 1;
 }
@@ -6,7 +10,8 @@ main {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    height: 100vh;
+    height: 75vh;
+    overflow: auto;
 }
 
 .markdown-body {
@@ -22,7 +27,7 @@ main {
 }
 
 #editor {
-    height: 90vh;
+    height: 100%;
     width: 100%;
 }
 
