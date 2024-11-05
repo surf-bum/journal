@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="./style.css">
         <link rel="stylesheet"
               href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.7.0/github-markdown-light.css" />
         <link rel="stylesheet"
@@ -52,38 +53,21 @@
                     }
                 }))
         </script>
-        <style>
-            .markdown-body {
-                box-sizing: border-box;
-                margin: 0 auto;
-                padding: 16px;
-            }
-
-            @media (max-width: 767px) {
-                .markdown-body {
-                    padding: 8px;
-                }
-            }
-
-            #editor {
-                height: 90vh;
-                width: 100%;
-            }
-
-            #menu {
-                margin-bottom: 4px;
-                margin-top: 4px;
-            }
-        </style>
     </head>
     <body>
-        <div id="menu">
-            <button id="viewButton">View</button>
-            <button id="editButton">Edit</button>
+        <div class="container">
+            <header id="menu">
+                <button id="viewButton">View</button>
+                <button id="editButton">Edit</button>
+            </header>
+            <main>
+                <div id="editor"></div>
+                <div class="markdown-body" id="viewer"></div>
+            </main>
+            <footer>
+                <p>markdown</p>
+            </footer>
         </div>
-        <div id="editor"></div>
-        <div class="markdown-body" id="viewer"></div>
-        <p>markdown</p>
         <script defer>
             let aceEditor = null;
             let body = "";
@@ -145,8 +129,23 @@
                     return;
                 }
 
-                body = event.data?.content?.body ?? "";
-                updateViewer(body);
+                switch (true) {
+                    case event.data.type == "content":
+                        body = event.data?.content?.body ?? "";
+                        updateViewer(body);
+                        break;
+                    case event.data.type == "edit":
+                        body = event.data?.content?.body ?? "";
+                        updateViewer(body);
+                        break;
+                    case event.data.type == "view":
+                        body = event.data?.content?.body ?? "";
+                        updateViewer(body);
+                        break;
+                    default:
+                        break;
+                }
+
             }
 
             console.log("Init cellId", cellId);
