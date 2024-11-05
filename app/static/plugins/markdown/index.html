@@ -55,19 +55,17 @@
         </script>
     </head>
     <body>
+        <header id="menu">
+            <button id="viewButton">View</button>
+            <button id="editButton">Edit</button>
+        </header>
         <div class="container">
-            <header id="menu">
-                <button id="viewButton">View</button>
-                <button id="editButton">Edit</button>
-            </header>
-            <main>
-                <div id="editor"></div>
-                <div class="markdown-body" id="viewer"></div>
-            </main>
-            <footer>
-                <p>markdown</p>
-            </footer>
+            <div id="editor"></div>
+            <div class="markdown-body" id="viewer"></div>
         </div>
+        <footer>
+            <p>markdown</p>
+        </footer>
         <script defer>
             let aceEditor = null;
             let body = "";
@@ -93,11 +91,26 @@
                 viewerDivElement.innerHTML = renderMarkdown(body);
             }
 
-            editButtonElement.onclick = () => {
+            function switchToEditMode() {
                 editorDivElement.setAttribute("style", "display: inherit;");
                 viewerDivElement.setAttribute("style", "display: none;");
                 updateEditor(body);
             }
+
+            function switchToViewMode() {
+                editorDivElement.setAttribute("style", "display: none;");
+                viewerDivElement.setAttribute("style", "display: inherit;");
+                updateViewer(body);
+            }
+
+            editButtonElement.onclick = () => {
+                switchToEditMode();
+            }
+
+            viewButtonElement.onclick = () => {
+                switchToViewMode();
+            }
+
             setupAceEditor();
             aceEditor.on("input", function() {
                 body = aceEditor.getValue();
@@ -111,11 +124,7 @@
                     "type": "data"
                 })
             });
-            viewButtonElement.onclick = () => {
-                editorDivElement.setAttribute("style", "display: none;");
-                viewerDivElement.setAttribute("style", "display: inherit;");
-                updateViewer(body);
-            }
+
 
             const urlSearchParams = new URLSearchParams(window.location.search);
             const cellId = urlSearchParams.get("cellId");
@@ -130,17 +139,15 @@
                 }
 
                 switch (true) {
-                    case event.data.type == "content":
+                    case event.data.type === "content":
                         body = event.data?.content?.body ?? "";
                         updateViewer(body);
                         break;
-                    case event.data.type == "edit":
-                        body = event.data?.content?.body ?? "";
-                        updateViewer(body);
+                    case event.data.type === "edit":
+                        switchToEditMode();
                         break;
-                    case event.data.type == "view":
-                        body = event.data?.content?.body ?? "";
-                        updateViewer(body);
+                    case event.data.type === "view":
+                        switchToViewMode();
                         break;
                     default:
                         break;

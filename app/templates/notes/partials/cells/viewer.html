@@ -40,18 +40,12 @@
                     </button>
                     <button aria-label="View cell"
                             class="btn btn-primary btn-sm"
-                            form="cellEditForm-{{ cell.id }}"
-                            hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
-                            id="cellEditButton-{{ cell.id }}"
-                            type="submit">
+                            onclick="viewCell('{{ cell.id }}')">
                         <i class="bi bi-eye"></i>
                     </button>
                     <button aria-label="Edit cell"
                             class="btn btn-primary btn-sm"
-                            form="cellEditForm-{{ cell.id }}"
-                            hx-get="{{ url_for('ui.notes_ui.partial_cell_editor', cell_id=cell.id, note_id=note.id) }}"
-                            id="cellEditButton-{{ cell.id }}"
-                            type="submit">
+                            onclick="editCell('{{ cell.id }}')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                     <button aria-label="Save cell"
@@ -80,6 +74,26 @@
     </div>
 </div>
 <script>
+    function editCell(cellId) {
+        const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`);
+        const message = {
+            cellId,
+            source: "host",
+            type: "edit"
+        };
+        cellPluginIframe.contentWindow.postMessage(message);
+    }
+
+    function viewCell(cellId) {
+        const cellPluginIframe = document.getElementById(`cellPluginIframe-${cellId}`);
+        const message = {
+            cellId,
+            source: "host",
+            type: "view"
+        };
+        cellPluginIframe.contentWindow.postMessage(message);
+    }
+
     function handleMessage(event) {
         const cellId = "{{ cell.id }}";
         const cellEditFormContentInput = document.getElementById(`cellEditFormContentInput-${cellId}`);
