@@ -172,14 +172,14 @@
         }
 
         function switchToEditMode() {
-            editorDivElement.setAttribute("style", "display: inherit;");
+            editorDivElement.removeAttribute("style");
             viewerDivElement.setAttribute("style", "display: none;");
             updateEditor(body);
         }
 
         function switchToViewMode() {
             editorDivElement.setAttribute("style", "display: none;");
-            viewerDivElement.setAttribute("style", "display: inherit;");
+            viewerDivElement.removeAttribute("style");
             updateViewer(body);
         }
 
