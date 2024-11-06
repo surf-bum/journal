@@ -51,3 +51,9 @@
 #### Troubleshoot
 
     piccolo --diagnose
+
+## Deployment
+
+Single instance running inside a Docker container. 
+
+Application served by gunicorn, worker class is "sync", number of workers is double the number of "logical" CPU cores.

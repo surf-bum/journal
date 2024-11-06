@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from datetime import datetime
 
@@ -101,6 +102,6 @@ logconfig_dict = {
         },
     },
 }
-workers = 1
+workers = os.cpu_count() * 2
 worker_class = "sync"
 timeout = 60
