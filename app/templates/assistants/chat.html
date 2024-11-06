@@ -1,4 +1,35 @@
 {% extends 'base.html' %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet"
+          href="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
+    <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="//unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
+    <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
+    <script defer>
+        hljs.addPlugin(
+            new CopyButtonPlugin({
+                autohide: false,
+            })
+        );
+        hljs.highlightAll();
+
+        const {
+            markedHighlight
+        } = globalThis.markedHighlight;
+        marked.use(
+            markedHighlight({
+                langPrefix: 'hljs language-',
+                highlight(code, lang) {
+                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return hljs.highlight(code, {
+                        language
+                    }).value;
+                }
+            }))
+    </script>
+{% endblock %}
 {% block content %}
     <div class="d-flex flex-column gap-2 h-100">
         <div class="flex-grow-1" id="messages"></div>

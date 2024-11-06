@@ -17,25 +17,6 @@
                 <link rel="stylesheet"
                       href="//cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
                 <script src="//unpkg.com/htmx.org@2.0.3"></script>
-                <script src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-                <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-                <script src=" //cdn.jsdelivr.net/npm/marked-highlight@2.1.4/lib/index.umd.min.js "></script>
-                <script defer>
-                    hljs.highlightAll();
-
-                    const {
-                        markedHighlight
-                    } = globalThis.markedHighlight;
-                    marked.use(
-                        markedHighlight({
-                            langPrefix: 'hljs language-',
-                            highlight(code, lang) {
-                                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                                return hljs.highlight(code, {
-                                    language
-                                }).value;
-                            }
-                        }))
                 </script>
             {% endblock %}
         </head>
