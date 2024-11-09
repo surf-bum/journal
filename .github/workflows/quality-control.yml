@@ -6,6 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: "postgres://postgres:postgres@localhost:5432/journal"
+      OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+      OIDC_CLIENT_SECRET: ${{ secrets.OIDC_CLIENT_SECRET }}
+      OIDC_DISCOVERY_URI: ${{ secrets.OIDC_DISCOVERY_URI }}
+      OIDC_REDIRECT_URIS: "http://127.0.0.1:5000/ui/oidc/callback"
     services:
       postgres:
         image: postgres:16.4

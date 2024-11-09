@@ -8,10 +8,14 @@ from app.notes.serializers import Note
 
 @pytest.fixture()
 def note(random_suffix):
-    response = requests.post("http://127.0.0.1:15000/api/v1/notes/", json={"title": f"Test note {random_suffix}"})
+    response = requests.post(
+        "http://127.0.0.1:15000/api/v1/notes/",
+        json={"title": f"Test note {random_suffix}"},
+    )
     assert response.status_code == 201
     note = Note(**response.json())
     yield note
+
 
 class TestNotesAPI:
     def test_delete_note(self, note):
@@ -28,11 +32,15 @@ class TestNotesAPI:
         assert response.status_code == 404
 
     def test_patch_note(self, note, random_suffix):
-        response = requests.patch(f"http://127.0.0.1:15000/api/v1/notes/{note.id}", json={})
+        response = requests.patch(
+            f"http://127.0.0.1:15000/api/v1/notes/{note.id}", json={}
+        )
         assert response.status_code == 400
 
         title = f"Test note {random_suffix} patched"
-        response = requests.patch(f"http://127.0.0.1:15000/api/v1/notes/{note.id}", json={"title": title})
+        response = requests.patch(
+            f"http://127.0.0.1:15000/api/v1/notes/{note.id}", json={"title": title}
+        )
         assert response.status_code == 200
         assert response.json()["title"] == title
 
@@ -41,16 +49,17 @@ class TestNotesAPI:
         assert response.status_code == 400
 
         title = f"Test note {random_suffix}"
-        response = requests.post("http://127.0.0.1:15000/api/v1/notes/", json={"title": title})
+        response = requests.post(
+            "http://127.0.0.1:15000/api/v1/notes/", json={"title": title}
+        )
         assert response.status_code == 201
         assert response.json()["title"] == title
 
- 
 
 class TestNotesUI:
     def test_create_note(self, page: Page, random_suffix: str):
         page.goto("http://127.0.0.1:15000/ui/notes/")
-        
+
         page.get_by_role("button", name="Create note").click()
         page.wait_for_selector("text='Create a new note'")
         assert page.is_visible("text='Create a new note'")
@@ -71,7 +80,7 @@ class TestNotesUI:
 
     def test_edit_note(self, note, page: Page, random_suffix: str):
         page.goto(f"http://127.0.0.1:15000/ui/notes/{note.id}")
-        
+
         title = note.title
         page.get_by_role("heading", name=title).click(force=True)
         selector = f"text='{title}'"
@@ -82,14 +91,14 @@ class TestNotesUI:
         page.locator('input[id="noteEditFormTitleInput"][name="title"]').fill("")
         page.locator('input[id="noteEditFormTitleInput"][name="title"]').type(title)
         page.get_by_role("button", name="Edit note").click()
-        
+
         selector = f"text='{title}'"
         page.wait_for_selector(selector)
         assert page.is_visible(selector)
 
     # def test_create_cell(self, note, page: Page, random_suffix: str):
     #     page.goto(f"http://127.0.0.1:15000/ui/notes/{note.id}")
-        
+
     #     title = note.title
     #     page.get_by_role("heading", name=title).click(force=True)
     #     selector = f"text='{title}'"
@@ -103,8 +112,7 @@ class TestNotesUI:
     #     content = f"Bar-Cell-{random_suffix}"
     #     page.locator('textarea[name="content"]').type(content)
     #     page.locator('button[form="createCellForm"][type="submit"]').click()
-        
+
     #     selector = f"text='{title}'"
     #     page.wait_for_selector(selector)
     #     assert page.is_visible(selector)
-        

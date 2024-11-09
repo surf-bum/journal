@@ -1,7 +1,7 @@
 from datetime import datetime
 import uuid
 
-from  slugify import slugify
+from slugify import slugify
 from app import storage
 from app.plugins.manager import PluginManager
 from app.utils import setup_logger
@@ -52,19 +52,25 @@ async def get_plugin(plugin_id):
     plugin = await PluginManager.get_plugin(plugin_id)
     return render_template("plugins/detail.html", plugin=plugin)
 
+
 @ui_plugins_blueprint.route("/<string:plugin>/load")
 async def load_plugin(plugin: str):
     return send_file(f"static/plugins/{plugin}/index.html")
+
 
 @ui_plugins_blueprint.route("/partials/<string:cellId>/iframe")
 async def partial_plugin_iframe(cellId: str):
     plugin = request.args.get("plugin")
     logger.debug("Loading iframe for plugin '%s' in partial request.", plugin)
-    return render_template("plugins/partials/iframe.html", cell_id=cellId, plugin=plugin)
+    return render_template(
+        "plugins/partials/iframe.html", cell_id=cellId, plugin=plugin
+    )
+
 
 @ui_plugins_blueprint.route("/<string:plugin>/<path>")
 async def load_plugin_path(plugin: str, path: str):
     return send_file(f"static/plugins/{plugin}/{path}")
+
 
 @ui_plugins_blueprint.route("/")
 async def list_plugins():
@@ -74,10 +80,10 @@ async def list_plugins():
 
 @api_plugins_blueprint.route("/<uuid:plugin_id>", methods=["DELETE"])
 async def delete_plugin(plugin_id):
-    plugin = await PluginManager.get_plugin(plugin_id) 
+    plugin = await PluginManager.get_plugin(plugin_id)
     if not plugin:
         return {"error": {"message": "Detail not found."}}, 404
-    
+
     storage.delete_file(plugin.path)
 
     await PluginManager.delete_plugin(plugin.id)

@@ -21,6 +21,10 @@ class Value:
 class Common(metaclass=EnvMeta):
     DATABASE_URL = Value("postgres://postgres:postgres@localhost:5432/journal")
     OLLAMA_HOST = Value("127.0.0.1")
+    OIDC_CLIENT_ID = Value("")
+    OIDC_CLIENT_SECRET = Value("")
+    OIDC_DISCOVERY_URI = Value("")
+    OIDC_REDIRECT_URIS = Value("")
     S3_BUCKET = Value("journal")
     SECRET_KEY = Value("change-me-please")
 
