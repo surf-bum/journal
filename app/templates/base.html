@@ -50,29 +50,21 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url_for("ui.references_ui.index") }}"><i class="bi bi-archive"> </i>Media</i></a>
                                 </li>
+                            </ul>
+                            <ul class="navbar-nav mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for("ui.plugins_ui.list_plugins") }}"><i class="bi bi-plugin"></i> Plugins</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       href="{{ url_for("ui.notes_ui.backup_restore_notes") }}">Backup and restore</a>
+                                    <li class="nav-item">
+                                        <p class="mb-0 navbar-text">Hi, {{ email }}</p>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ url_for("ui.plugins_ui.list_plugins") }}"><i class="bi bi-plugin"></i> Plugins</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           href="{{ url_for("ui.notes_ui.backup_restore_notes") }}"><i class="bi bi-wrench"></i> Maintenance</a>
+                                    </li>
                                 </li>
                             </ul>
-                        </div>
-                    </div>
-                </nav>
-                <nav class="mt-1 navbar">
-                    <div class="container-fluid">
-                        <div class="d-flex gap-1 w-100 justify-content-between">
-                            <div class="w-100">
-                                <form class="d-flex" role="search">
-                                    <input class="form-control form-control-sm me-2 flex-grow-1"
-                                           type="search"
-                                           placeholder="Search"
-                                           aria-label="Search">
-                                    <button class="btn btn-outline-success btn-sm" type="submit">Search</button>
-                                </form>
-                            </div>
                         </div>
                     </div>
                 </nav>
@@ -87,6 +79,15 @@
                             {% block breadcrumbs %}{% endblock %}
                         </ol>
                     </nav>
+                    <div class="my-2 w-100">
+                        <form class="d-flex" role="search">
+                            <input class="form-control form-control-sm me-2 flex-grow-1"
+                                   type="search"
+                                   placeholder="Search"
+                                   aria-label="Search">
+                            <button class="btn btn-success btn-sm" type="submit">Search</button>
+                        </form>
+                    </div>
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for message in messages %}

@@ -12,7 +12,7 @@ logger = setup_logger(__name__)
 
 
 def delete_file(key: str):
-    logger.debug("delete_file %s" , key)
+    logger.debug("delete_file %s", key)
     try:
         s3_client.delete_object(Bucket=bucket_name, Key=key)
     except ClientError as e:

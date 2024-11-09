@@ -1,10 +1,13 @@
 import socket
 import time
 import uuid
+from dotenv import load_dotenv
 from flask.testing import FlaskClient
 import pytest
 
 from app.utils import setup_logger
+
+load_dotenv()
 
 
 logger = setup_logger(__name__)
@@ -61,6 +64,7 @@ def server(app):
 
     wait_for_port(15000)
     yield
+
 
 @pytest.fixture()
 def random_suffix():

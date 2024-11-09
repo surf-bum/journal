@@ -1,4 +1,3 @@
-
 import pytest
 from playwright.sync_api import Page
 import requests
@@ -7,7 +6,6 @@ from app.notes.tables import NoteSerializer
 from app.utils import setup_logger
 
 logger = setup_logger(__name__)
-
 
 
 @pytest.fixture()
@@ -25,7 +23,7 @@ def test_edit_note(page: Page):
     # title = f"Test note {random_suffix}"
     # note = NoteSerializer(id=uuid.uuid4(), title=title)
     # note = await NoteManager.create_note(note)
-    
+
     # page.get_by_role("button", name="Create note").click()
     # page.wait_for_selector("text='Create a new note'")
     # assert page.is_visible("text='Create a new note'")

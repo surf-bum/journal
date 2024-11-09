@@ -44,9 +44,7 @@ async def get_note(note_id):
         return redirect(url_for("ui.notes_ui.index"))
 
 
-@ui_notes_blueprint.route(
-    "/notes/<uuid:note_id>/cells", methods=["POST"]
-)
+@ui_notes_blueprint.route("/notes/<uuid:note_id>/cells", methods=["POST"])
 async def create_cell(note_id):
     title = request.form["title"]
     content = request.form["content"] or "{}"
@@ -61,7 +59,7 @@ async def create_cell(note_id):
         note=note.id,
         plugin=plugin,
         position=0,
-        title = title,
+        title=title,
         updated_at=datetime.now(),
     )
     cell = await NoteManager.create_cell(cell)
@@ -82,6 +80,7 @@ async def update_cell(cell_id, note_id):
     await NoteManager.update_cell(cell)
 
     return redirect(url_for("ui.notes_ui.get_note", note_id=note_id))
+
 
 @ui_notes_blueprint.route("/create", methods=["POST"])
 async def create_note():
@@ -170,12 +169,14 @@ async def backup_restore_notes():
     notes = await NoteManager.get_notes()
     return render_template("notes/backup_restore.html", notes=notes)
 
+
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/editor/cells/<uuid:cell_id>")
 async def partial_cell_editor(cell_id, note_id):
     cell = await NoteManager.get_cell(cell_id)
     note = await NoteManager.get_note(note_id)
 
     return render_template("notes/partials/cells/editor.html", cell=cell, note=note)
+
 
 @ui_notes_blueprint.route(
     "/partials/<uuid:note_id>/cells/<uuid:cell_id>/position", methods=["POST"]
@@ -191,6 +192,7 @@ async def partial_cell_position(cell_id, note_id):
     note = await NoteManager.get_note(note_id)
 
     return render_template("notes/partials/cells/cells.html", cells=cells, note=note)
+
 
 @ui_notes_blueprint.route("/partials/<uuid:note_id>/viewer/cells/<uuid:cell_id>")
 async def partial_cell_viewer(cell_id, note_id):
@@ -225,9 +227,8 @@ async def partial_note_update(note_id):
 
     return redirect(url_for("ui.notes_ui.partial_note_viewer", note_id=note.id))
 
-@api_notes_blueprint.route(
-    "/<uuid:note_id>", methods=["DELETE"]
-)
+
+@api_notes_blueprint.route("/<uuid:note_id>", methods=["DELETE"])
 async def delete_api_note(note_id):
     if _ := await NoteManager.get_note(note_id):
         await NoteManager.delete_note(note_id)
@@ -236,34 +237,31 @@ async def delete_api_note(note_id):
 
     return "", 204
 
-@api_notes_blueprint.route(
-    "/<uuid:note_id>", methods=["GET"]
-)
+
+@api_notes_blueprint.route("/<uuid:note_id>", methods=["GET"])
 async def get_api_note(note_id):
     if _ := await NoteManager.get_note(note_id):
         return {}
     else:
         return {"error": {"message": "Object not found"}}, 404
-    
-@api_notes_blueprint.route(
-    "/<uuid:note_id>", methods=["PATCH"]
-)
+
+
+@api_notes_blueprint.route("/<uuid:note_id>", methods=["PATCH"])
 async def patch_note(note_id):
     try:
         serialized_note = PatchNote.model_validate(request.json)
     except ValidationError as e:
         logger.error(e)
         return {"error": {"message": str(e)}}, 400
-    
+
     if _ := await NoteManager.get_note(note_id):
         NoteManager.update_note(serialized_note)
         return serialized_note.model_dump()
     else:
         return {"error": {"message": "Object not found"}}, 404
 
-@api_notes_blueprint.route(
-    "/", methods=["POST"]
-)
+
+@api_notes_blueprint.route("/", methods=["POST"])
 async def post_note():
     try:
         serialized_note = CreateNote.model_validate(request.json)

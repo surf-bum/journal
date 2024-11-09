@@ -21,7 +21,7 @@ class NoteManager:
         note = notes[0]
 
         return NoteSerializer(**note)
-    
+
     @classmethod
     async def create_cell(cls, cell):
         note = await Cell.insert(
@@ -49,7 +49,11 @@ class NoteManager:
 
     @classmethod
     async def get_cells(cls, note_id) -> list:
-        return await Cell.objects().where(Cell.note == note_id).order_by(Cell.position, ascending=False)
+        return (
+            await Cell.objects()
+            .where(Cell.note == note_id)
+            .order_by(Cell.position, ascending=False)
+        )
 
     @classmethod
     async def get_notes(cls) -> list:
@@ -58,7 +62,9 @@ class NoteManager:
     @classmethod
     async def update_cell(cls, partial_cell) -> list:
         return await Cell.update(
-            title=partial_cell.title, content=partial_cell.content,position=partial_cell.position
+            title=partial_cell.title,
+            content=partial_cell.content,
+            position=partial_cell.position,
         ).where(Cell.id == partial_cell.id)
 
     @classmethod
