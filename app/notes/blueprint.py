@@ -99,6 +99,18 @@ async def create_note():
 
     return redirect(url_for("ui.notes_ui.get_note", note_id=note.id))
 
+@ui_notes_blueprint.route("/search")
+async def search():
+    term = request.args.get("term")
+
+    if term:
+        term = term.strip()
+        results = await NoteManager.search(term)
+    else:
+        results = []
+        
+    return render_template("partials/search_results.html", results=results)
+
 
 @ui_notes_blueprint.route(
     "/<uuid:note_id>/cells/<uuid:cell_id>/delete", methods=["GET"]
