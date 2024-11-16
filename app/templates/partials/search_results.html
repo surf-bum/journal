@@ -1,0 +1,20 @@
+{% if results %}
+    <div class="list-group">
+        {% if results.notes %}
+            {% for result in results.notes %}
+                <div class="list-group-item">
+                    <a href="{{ url_for('ui.notes_ui.get_note', note_id=result.id) }}"
+                       class="list-group-item list-group-item-action py-2">{{ result.title }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if results.cells %}
+            {% for result in results.cells %}
+                <div class="list-group-item">
+                    <a href="{{ url_for('ui.notes_ui.get_note', note_id=result.note.id) }}"
+                       class="list-group-item list-group-item-action py-2">{{ result.title }} {{ result.note.id }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endif %}

@@ -58,6 +58,19 @@ class NoteManager:
     @classmethod
     async def get_notes(cls) -> list:
         return await Note.select().order_by(Note.updated_at)
+    
+    @classmethod
+    async def search(cls, term: str) -> list:
+        logger.debug("Searching term %s.", term)
+        
+        notes =  await Note.objects().where(Note.title.ilike(f"%{term}%"))
+        cells =  await Cell.objects(Cell.note).where(Cell.title.ilike(f"%{term}%"))
+ 
+        return {
+            'notes': notes,
+            'cells': cells
+        }
+        
 
     @classmethod
     async def update_cell(cls, partial_cell) -> list:
