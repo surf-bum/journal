@@ -1,4 +1,4 @@
-boto3==1.35.69
+boto3==1.35.70
 chromadb==0.5.13 
 flask[async]==3.0.3
 gunicorn==23.0.0
