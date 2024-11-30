@@ -10,5 +10,5 @@ pydantic==2.9.2
 python-dotenv==1.0.1
 python-slugify==8.0.4 
 oic==1.7.0
-ollama==0.3.3 
+ollama==0.4.2 
 requests==2.32.3 
