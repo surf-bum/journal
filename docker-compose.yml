@@ -4,6 +4,6 @@ services:
       - POSTGRES_DB=journal
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-    image: postgres:16.6
+    image: postgres:17.2
     ports:
       - "5432:5432"
